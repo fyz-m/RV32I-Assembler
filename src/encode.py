@@ -9,34 +9,34 @@ input instruction example format:
 # Controlbits = op, func3, func7 
 Instructions = {
   "R-type": {
-   "1":{"mnemonic": "add", "controlBits": (51, 0, 0)},
-    "2":{"mnemonic": "sub", "controlBits": (51, 0, 32)},
-    "3":{"mnemonic": "sll", "controlBits": (51, 1, 0)},
-    "4":{"mnemonic": "slt", "controlBits": (51, 2, 0)},
-    "5":{"mnemonic": "sltu", "controlBits": (51, 3, 0)},
-    "6":{"mnemonic": "xor", "controlBits": (51, 4, 0)},
-    "7":{"mnemonic": "srl", "controlBits": (51, 5, 0)},
-    "8":{"mnemonic": "sra", "controlBits": (51, 5, 32)}
+    "add": {"controlBits": (51, 0, 0)},
+    "sub": {"controlBits": (51, 0, 32)},
+    "sll": {"controlBits": (51, 1, 0)},
+    "slt": {"controlBits": (51, 2, 0)},
+    "sltu": {"controlBits": (51, 3, 0)},
+    "xor": {"controlBits": (51, 4, 0)},
+    "srl": {"controlBits": (51, 5, 0)},
+    "sra": {"controlBits": (51, 5, 32)}
   },
 
   "I-type": {
-    "1":{"mnemonic": "addi", "controlBits": (19, 0, None) },
+    "addi": {"controlBits": (19, 0, None)},
   },
 
   "S-type": {
-    "1":{"mnemonic": "sw", "controlBits": (35, 2, None) },
+    "sw":{"controlBits": (35, 2, None) },
   },
 
   "B-type": {
-    "1":{"mnemonic": "beq", "controlBits": (99, 0, None) },
+    "beq":{"controlBits": (99, 0, None) },
   },
 
   "U-type": {
-   "1": {"mnemonic": "lui", "controlBits": (55, None, None) },
+   "lui": {"controlBits": (55, None, None) },
   },
 
   "J-type": {
-    "1":{"mnemonic": "jal", "controlBits": (111, None, None) },
+    "jal":{"controlBits": (111, None, None) },
   }
 }
 
@@ -70,8 +70,7 @@ def getType(instruction):
   
   h, instruction = instruction.split(" ", 1)
   for type in Instructions:
-    for i in Instructions[type]:
-      if h == Instructions[type][i]["mnemonic"]:
+    if h in Instructions[type]:
         return type
   
 def getFields(type, instruction):
