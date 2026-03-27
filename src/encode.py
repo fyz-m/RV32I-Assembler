@@ -6,37 +6,37 @@ input instruction example format:
   "add 18, 19, 20" 
 
 '''
-# Contains each instruction's op, func3, func7 
+# Controlbits = op, func3, func7 
 Instructions = {
   "R-type": {
-    {"mnemonic": "add", "controlBits": (51, 0, 0)},
-    {"mnemonic": "sub", "controlBits": (51, 0, 32)},
-    {"mnemonic": "sll", "controlBits": (51, 1, 0)},
-    {"mnemonic": "slt", "controlBits": (51, 2, 0)},
-    {"mnemonic": "sltu", "controlBits": (51, 3, 0)},
-    {"mnemonic": "xor", "controlBits": (51, 4, 0)},
-    {"mnemonic": "srl", "controlBits": (51, 5, 0)},
-    {"mnemonic": "sra", "controlBits": (51, 5, 32)}
+   "1":{"mnemonic": "add", "controlBits": (51, 0, 0)},
+    "2":{"mnemonic": "sub", "controlBits": (51, 0, 32)},
+    "3":{"mnemonic": "sll", "controlBits": (51, 1, 0)},
+    "4":{"mnemonic": "slt", "controlBits": (51, 2, 0)},
+    "5":{"mnemonic": "sltu", "controlBits": (51, 3, 0)},
+    "6":{"mnemonic": "xor", "controlBits": (51, 4, 0)},
+    "7":{"mnemonic": "srl", "controlBits": (51, 5, 0)},
+    "8":{"mnemonic": "sra", "controlBits": (51, 5, 32)}
   },
 
   "I-type": {
-    {"mnemonic": "addi", "controlBits": (51, 0, 0) },
+    "1":{"mnemonic": "addi", "controlBits": (19, 0, None) },
   },
 
   "S-type": {
-    {"mnemonic": "sw", "controlBits": (51, 0, 0) },
+    "1":{"mnemonic": "sw", "controlBits": (35, 2, None) },
   },
 
   "B-type": {
-    {"mnemonic": "beq", "controlBits": (51, 0, 0) },
+    "1":{"mnemonic": "beq", "controlBits": (99, 0, None) },
   },
 
   "U-type": {
-    {"mnemonic": "lui", "controlBits": (51, 0, 0) },
+   "1": {"mnemonic": "lui", "controlBits": (55, None, None) },
   },
 
   "J-type": {
-    {"mnemonic": "jal", "controlBits": (51, 0, 0) },
+    "1":{"mnemonic": "jal", "controlBits": (111, None, None) },
   }
 }
 
@@ -68,10 +68,11 @@ def getType(instruction):
        output = "R-type"
   '''
   
-  mnemonic, instruction = instruction.split(" ", 1)
-  for type in  Instructions:
-    if mnemonic in Instructions[type]:
-      return type
+  h, instruction = instruction.split(" ", 1)
+  for type in Instructions:
+    for i in Instructions[type]:
+      if h == Instructions[type][i]["mnemonic"]:
+        return type
   
 def getFields(type, instruction):
   '''
