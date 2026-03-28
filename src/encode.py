@@ -6,10 +6,10 @@ input instruction example format:
   "add 18, 19, 20" 
 
 '''
-# Controlbits = op, func3, func7 
+
 Instructions = {
   "R-type": {
-    "add": {"controlBits": (51, 0, 0)},
+    "add": {"controlBits": (51, 0, 0)},  # Controlbits = opcode, func3, func7 
     "sub": {"controlBits": (51, 0, 32)},
     "sll": {"controlBits": (51, 1, 0)},
     "slt": {"controlBits": (51, 2, 0)},
@@ -79,22 +79,24 @@ def getFields(type, instruction):
   '''
   Returns the field values of each instruction
   '''
+  opcode, func3, func7 = Instructions[type][getMnemonic(instruction)]["controlBits"]
+
   
 
-def encode_R_type(op, rd, rs1, rs2, func3, func7):
+def encode_R_type(opcode, rd, rs1, rs2, func3, func7):
   ...
 
-def encode_I_type(op, rd, rs1, func3, imm):
+def encode_I_type(opcode, rd, rs1, func3, imm):
   ...
 
-def encode_S_type(op, rs1, rs2, func3, imm):
+def encode_S_type(opcode, rs1, rs2, func3, imm):
   ... 
 
-def encode_B_type(op, rs1, rs2, func3, imm):
+def encode_B_type(opcode, rs1, rs2, func3, imm):
   ... 
 
-def encode_U_type(op, rd, imm):
+def encode_U_type(opcode, rd, imm):
   ... 
 
-def encode_J_type(op, rd, imm):
+def encode_J_type(opcode, rd, imm):
   ... 
