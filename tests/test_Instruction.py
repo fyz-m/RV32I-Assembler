@@ -1,4 +1,4 @@
-from src.encode import Instruction
+from src.Instruction import Instruction
 import pytest
 
 @pytest.mark.parametrize("input_inst, expected_mnemonic",[
