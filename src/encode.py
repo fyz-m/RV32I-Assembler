@@ -46,18 +46,6 @@ class Instruction:
       if self.Mnemonic in Instructions[type]:
         self._Type = type 
 
-  @property
-  def Registers(self):
-    return self._Registers
-  @Registers.setter
-  def Registers(self, instruction):
-    ...
-    #R-type : (mne) rd, rs1, rs2
-    #I-type : (mne) rd, rs1, imm
-    #S-type : (mne) rs2, imm(rs1)   imm = offset
-    #B-type : (mne) rs1, rs2, imm   imm = branch offset
-    #U-type : (mne) rd, imm
-    #J-type : (mne) rd, imm
 
   @property
   def Operands(self):
@@ -65,27 +53,60 @@ class Instruction:
   @Operands.setter
   def Operands(self):
     if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
-      self._Operands = inst_half.split(",")            #Split into individual operands 
+      operands = inst_half.split(",")            #Split into individual operands
+      if checkOperands(operands):
+        self._Operands = operands
     else:
       raise ValueError
 
+  def checkOperands(self, operands):
+    ...
 
-  def get_rd(self):
-      if self.Type ==  "R-type" | "I-type" | "U-type" | "J-type":
-        rd = self.Operands[0]
-      else:
-        rd = None
-  def get_rs1(self):
+    #R-type : (mne) rd, rs1, rs2
+    #I-type : (mne) rd, rs1, imm
+    #S-type : (mne) rs2, imm(rs1)   imm = offset
+    #B-type : (mne) rs1, rs2, imm   imm = branch offset
+    #U-type : (mne) rd, imm
+    #J-type : (mne) rd, imm
+  
+  @property
+  def Registers(self):
+    return self._Registers
+  @Registers.setter
+  def Registers(self):
+
     match self.Type:
-      case "R-type" | "I-type":
+      case "R-type":
         rs1 = self.Operands[1]
+        rs2 = self.Operands[2]
+        rd = self.Operands[0]
+
+      case "I-type":
+        rs1 = self.Operands[1]
+        rs2 = None
+        rd = self.Operands[0]
+        
       case "S-type":
         rs1 = re.search(r".+(.+)", self.Operands[2]).groups(1)
+        rs2 = self.Operands[0]
+        rd = None
+
       case "B-type":
         rs1 = self.Operands[0]
-      case "U-type" | "J-type":
-        rs1 = None
+        rs2 = self.Operands[1]
+        rd = None
 
+      case "U-type":
+        rs1 = None
+        rs2 = None
+        rd = self.Operands[0]
+
+      case "J-type":
+        rs1 = None
+        rs2 = None
+        rd = self.Operands[0]
+    
+    
 
 Instructions = {
   "R-type": {
