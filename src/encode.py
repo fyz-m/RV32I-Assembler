@@ -10,10 +10,7 @@ input instruction example format:
 
 def encode(instruction):
 
-  Type = getType(instruction)
-  fields = getFields(Type, instruction)
-
-  match Type:
+  match instruction.Type:
     case "R-type":
       encode_R_type(instruction)
     case "I-type":
@@ -28,13 +25,6 @@ def encode(instruction):
       encode_B_type(instruction)
 
 
-  
-def getFields(type, instruction):
-  '''
-  Returns the field values of each instruction
-  '''
-  opcode, func3, func7 = Instructions[type][getMnemonic(instruction)]["controlBits"]
-  
 
 
 def encode_R_type(opcode, rd, rs1, rs2, func3, func7):
