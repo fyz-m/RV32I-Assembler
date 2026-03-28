@@ -6,6 +6,8 @@ input instruction example format:
   "add 18, 19, 20" 
 
 '''
+import re
+
 class Instruction:
   def __init__(self, instruction):
     self.instruction = instruction
@@ -49,7 +51,7 @@ class Instruction:
     return self._Registers
   @Registers.setter
   def Registers(self, instruction):
-    
+    ...
     #R-type : (mne) rd, rs1, rs2
     #I-type : (mne) rd, rs1, imm
     #S-type : (mne) rs2, imm(rs1)   imm = offset
@@ -77,6 +79,12 @@ class Instruction:
     match self.Type:
       case "R-type" | "I-type":
         rs1 = self.Operands[1]
+      case "S-type":
+        rs1 = re.search(r".+(.+)", self.Operands[2]).groups(1)
+      case "B-type":
+        rs1 = self.Operands[0]
+      case "U-type" | "J-type":
+        rs1 = None
 
 
 Instructions = {
