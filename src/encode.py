@@ -1,7 +1,7 @@
 
 '''
 Encode instruction according to instruction type: R, I, S/B, U/J
-Registers must be converted to their number (defined by RISC-V ISA)
+Registers must already be converted to their number (defined by RISC-V ISA)
 input instruction example format:
   "add 18, 19, 20" 
 
@@ -67,12 +67,14 @@ def getType(instruction):
   E.g: input = "add s3, s1, s2"
        output = "R-type"
   '''
-  
-  h, instruction = instruction.split(" ", 1)
   for type in Instructions:
-    if h in Instructions[type]:
+    if getMnemonic(instruction) in Instructions[type]:
         return type
-  
+
+def getMnemonic(instruction):
+  return instruction.split(" ", 1)[0]
+
+
 def getFields(type, instruction):
   '''
   Returns the field values of each instruction
