@@ -7,9 +7,10 @@ class Instruction:
   def __init__(self, instruction):
     self.instruction = instruction
     self.Mnemonic = instruction
-    self.Type = instruction
-    self.Operands = instruction
-    self.Registers = instruction
+    self.Operands = None
+    self.Type = None
+    self.Registers = None
+    
 
   @property
   def Mnemonic(self):
@@ -35,18 +36,19 @@ class Instruction:
   def Type(self):
     return self._Type
   @Type.setter
-  def Type(self):
-
+  def Type(self, _=None):
     for type in Instructions:
       if self.Mnemonic in Instructions[type]:
-        self._Type = type 
+        self._Type = type
+      else:
+        self._Type = None 
 
 
   @property
-  def Operands(self):
+  def Operands(self, _=None):
     return self._Operands
   @Operands.setter
-  def Operands(self):
+  def Operands(self, _):
     if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
       operands = inst_half.split(",")            #Split into individual operands
       if self.checkOperands(operands):
@@ -55,11 +57,13 @@ class Instruction:
       raise ValueError
     
   
-  def checkOperands(cls, operands):
+  def checkOperands(self, operands):
     '''
     checks if operands are in the correct format according to instruction type
     Does not check if operands are correct.
+    e.g R-type instructions are in the format "mnemonic a, b, c"
     '''
+    return operands
 
 
   
@@ -67,7 +71,7 @@ class Instruction:
   def Registers(self):
     return self._Registers
   @Registers.setter
-  def Registers(self):
+  def Registers(self, _=None):
     #R-type : (mne) rd, rs1, rs2
     #I-type : (mne) rd, rs1, imm
     #S-type : (mne) rs2, imm(rs1)   imm = offset
@@ -104,23 +108,33 @@ class Instruction:
         rs1 = None
         rs2 = None
         rd = self.Operands[0]
+      case _:
+        rs1 = 'a'
+        rs2 = 'b'
+        rd = 'c'
+
+    RegDict = {}
+    if rs1 and self.checkReg(rs1):
+      RegDict["rs1"] = rs1
+    if rs2 and self.checkReg(rs2):
+      RegDict["rs2"] = rs2
+    if rd and self.checkReg(rd):
+      RegDict["rd"] = rd
     
-    if self.checkReg(rs1, rs2, rd):
-      self._Registers = {
-        "rs1": RegisterTable["rs1"],
-        "rs2": RegisterTable["rs2"],
-        "rd": RegisterTable["rd"]
-     }
-    else: 
-      raise ValueError
+    self._Registers = RegDict
+      
+    
   
   
-  def checkReg(*Registers):
-      for register in Registers:
-        if register not in RegisterTable:
+  def checkReg(self, register):
+
+        if register in RegisterTable:
+          return True
+        else:
           return False
+          
         
-      return True
+      
 
 RegisterTable = {
    "zero":0, "x0":0,
@@ -155,6 +169,7 @@ RegisterTable = {
    "t4":29, "x29":29,
    "t5":30, "x30":30,
    "t6":31, "x31":31,
+   None: None
 }
 
 Instructions = {
