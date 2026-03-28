@@ -11,6 +11,7 @@ class Instruction:
     self.instruction = instruction
     self.Mnemonic = instruction
     self.Type = instruction
+    self.Registers = instruction
 
   @property
   def Mnemonic(self):
@@ -36,13 +37,30 @@ class Instruction:
   def Type(self):
     return self._Type
   @Type.setter
-  def Type(self, instruction):
+  def Type(self):
 
     for type in Instructions:
       if self.Mnemonic in Instructions[type]:
         self._Type = type 
 
+  @property
+  def Registers(self):
+    return self._Registers
+  @Registers.setter
+  def Registers(self, instruction):
+    
+    inst_half = instruction.split(" ", 1)[1] #Instruction without mnemonic (contains operands)
+    operands = inst_half.split(",") #Split into individual operands 
 
+    #R-type : (mne) rd, rs1, rs2
+    #I-type : (mne) rd, rs1, imm
+    #S-type : (mne) rs2, imm(rs1)   imm = offset
+    #B-type : (mne) rs1, rs2, imm   imm = branch offset
+    #U-type : (mne) rd, imm
+    #J-type : (mne) rd, imm
+    match self.Type:
+      case "R-type":
+        ...
 
 
 
@@ -101,10 +119,6 @@ def encode(instruction):
       encode_B_type(instruction)
 
 
-def getRegisters(type, instruction):
-  '''
-  Returns the registers in an instruction 
-  '''
   
 def getFields(type, instruction):
   '''
