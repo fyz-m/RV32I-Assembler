@@ -6,6 +6,45 @@ input instruction example format:
   "add 18, 19, 20" 
 
 '''
+class Instruction:
+  def __init__(self, instruction):
+    self.instruction = instruction
+    self.Mnemonic = instruction
+    self.Type = instruction
+
+  @property
+  def Mnemonic(self):
+    return self._Mnemonic
+  
+  @Mnemonic.setter
+  def Mnemonic(self, instruction):
+     
+     if mnemonic := instruction.split(" ", 1)[0]:
+      for type in Instructions:
+        if mnemonic in Instructions[type]:
+          self._Mnemonic = mnemonic
+          return None          
+        else:
+          pass
+        
+      raise ValueError(f"Invalid instruction: '{mnemonic}'")  
+        
+     else:
+      raise ValueError(f"Invalid instruction: '{instruction}'")
+     
+  @property
+  def Type(self):
+    return self._Type
+  @Type.setter
+  def Type(self, instruction):
+
+    for type in Instructions:
+      if self.Mnemonic in Instructions[type]:
+        self._Type = type 
+
+
+
+
 
 Instructions = {
   "R-type": {
@@ -74,14 +113,18 @@ def getType(instruction):
 def getMnemonic(instruction):
   return instruction.split(" ", 1)[0]
 
-
+def getRegisters(type, instruction):
+  '''
+  Returns the registers in an instruction 
+  '''
+  
 def getFields(type, instruction):
   '''
   Returns the field values of each instruction
   '''
   opcode, func3, func7 = Instructions[type][getMnemonic(instruction)]["controlBits"]
-
   
+
 
 def encode_R_type(opcode, rd, rs1, rs2, func3, func7):
   ...
