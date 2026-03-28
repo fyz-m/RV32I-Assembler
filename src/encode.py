@@ -11,6 +11,7 @@ class Instruction:
     self.instruction = instruction
     self.Mnemonic = instruction
     self.Type = instruction
+    self.Operands = instruction
     self.Registers = instruction
 
   @property
@@ -58,9 +59,20 @@ class Instruction:
     #B-type : (mne) rs1, rs2, imm   imm = branch offset
     #U-type : (mne) rd, imm
     #J-type : (mne) rd, imm
-    match self.Type:
-      case "R-type":
-        ...
+  @property
+  def Operands(self):
+    return self._Operands
+  @Operands.setter
+  def Operands(self):
+    if inst_half := self.instruction.split(" ", 1)[1]:
+      self._Operands = inst_half.split(",")
+    else:
+      raise ValueError
+
+  def getRd(self):
+      if self.Type ==  "R-type" | "I-type" | "U-type" | "J-type":
+        rd = self.Operands[0]
+        
 
 
 
