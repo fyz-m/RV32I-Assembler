@@ -54,27 +54,31 @@ class Instruction:
   def Operands(self):
     if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
       operands = inst_half.split(",")            #Split into individual operands
-      if checkOperands(operands):
+      if self.checkOperands(operands):
         self._Operands = operands
     else:
       raise ValueError
+    
+  
+  def checkOperands(cls, operands):
+    '''
+    checks if operands are in the correct format according to instruction type
+    Does not check if operands are correct.
+    '''
 
-  def checkOperands(self, operands):
-    ...
 
-    #R-type : (mne) rd, rs1, rs2
-    #I-type : (mne) rd, rs1, imm
-    #S-type : (mne) rs2, imm(rs1)   imm = offset
-    #B-type : (mne) rs1, rs2, imm   imm = branch offset
-    #U-type : (mne) rd, imm
-    #J-type : (mne) rd, imm
   
   @property
   def Registers(self):
     return self._Registers
   @Registers.setter
   def Registers(self):
-
+    #R-type : (mne) rd, rs1, rs2
+    #I-type : (mne) rd, rs1, imm
+    #S-type : (mne) rs2, imm(rs1)   imm = offset
+    #B-type : (mne) rs1, rs2, imm   imm = branch offset
+    #U-type : (mne) rd, imm
+    #J-type : (mne) rd, imm
     match self.Type:
       case "R-type":
         rs1 = self.Operands[1]
@@ -106,8 +110,15 @@ class Instruction:
         rs2 = None
         rd = self.Operands[0]
     
-    
+    if self.checkReg(rs1, rs2, rd):
+      self._Registers = {
+        "rs1": rs1,
+        "rs2": rs2,
+        "rd": rd
+      } 
 
+    def checkReg(rs1, rs2, rd):
+      
 Instructions = {
   "R-type": {
     "add": {"controlBits": (51, 0, 0)},  # Controlbits = opcode, func3, func7 
