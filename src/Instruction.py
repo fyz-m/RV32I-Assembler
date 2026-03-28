@@ -40,8 +40,7 @@ class Instruction:
     for type in Instructions:
       if self.Mnemonic in Instructions[type]:
         self._Type = type
-      else:
-        self._Type = None 
+      
 
 
   @property
