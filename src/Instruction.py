@@ -1,6 +1,9 @@
 import re
 
 class Instruction:
+  '''
+  Instruction object is exactly one line of assembly (e.g add, s3, s2, s1)
+  '''
   def __init__(self, instruction):
     self.instruction = instruction
     self.Mnemonic = instruction
@@ -104,19 +107,22 @@ class Instruction:
     
     if self.checkReg(rs1, rs2, rd):
       self._Registers = {
-        "rs1": rs1,
-        "rs2": rs2,
-        "rd": rd
-      } 
-
-    def checkReg(*Registers):
+        "rs1": RegisterTable["rs1"],
+        "rs2": RegisterTable["rs2"],
+        "rd": RegisterTable["rd"]
+     }
+    else: 
+      raise ValueError
+  
+  
+  def checkReg(*Registers):
       for register in Registers:
-        if register not in Registers:
+        if register not in RegisterTable:
           return False
         
       return True
 
-Registers = {
+RegisterTable = {
    "zero":0, "x0":0,
    "ra":1, "x1":1,
    "sp":2, "x2":2,
