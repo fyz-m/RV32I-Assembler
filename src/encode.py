@@ -100,18 +100,6 @@ def encode(instruction):
     case "B-type":
       encode_B_type(instruction)
 
-def getType(instruction):
-  '''
-  Returns instructon type based on the mnemonic 
-  E.g: input = "add s3, s1, s2"
-       output = "R-type"
-  '''
-  for type in Instructions:
-    if getMnemonic(instruction) in Instructions[type]:
-        return type
-
-def getMnemonic(instruction):
-  return instruction.split(" ", 1)[0]
 
 def getRegisters(type, instruction):
   '''
