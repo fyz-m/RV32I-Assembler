@@ -89,7 +89,7 @@ class Instruction:
         rd = self.Operands[0]
         
       case "S-type":
-        rs1 = re.search(r".+(.+)", self.Operands[2]).groups(1)
+        rs1 = re.search(r".+(.+)", self.Operands[1]).groups(1)
         rs2 = self.Operands[0]
         rd = None
 
