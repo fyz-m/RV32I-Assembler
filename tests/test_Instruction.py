@@ -34,3 +34,16 @@ def test_operands(input_inst, expected_operands):
   instruction = Instruction(input_inst)
   assert instruction.Operands == expected_operands
 
+
+@pytest.mark.parametrize("input_inst, expected_registers", [
+        ("add t0, zero, s1", {"rd":5 , "rs1":0, "rs2":9}),
+        ("addi zero, zero, 0", {"rd":0 , "rs1":0,}),
+        ("sw t5, 20(s3)", {"rs2":30, "rs1":19 })
+  
+])
+
+def test_Registers(input_inst, expected_registers):
+  
+  instruction = Instruction(input_inst)
+  assert instruction.Registers == expected_registers
+

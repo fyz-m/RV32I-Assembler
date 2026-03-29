@@ -3,6 +3,7 @@ import re
 class Instruction:
   '''
   Instruction object is exactly one line of assembly (e.g add, s3, s2, s1)
+  Validates instruction format, mnemonic, registers and immediate where applicable.
   '''
   def __init__(self, instruction):
     self.instruction = instruction
@@ -113,6 +114,9 @@ class Instruction:
     return self._Registers
   @Registers.setter
   def Registers(self, _=None):
+    '''
+    Converts registers into their corresponding number after validation
+    '''
     #R-type : (mne) rd, rs1, rs2
     #I-type : (mne) rd, rs1, imm
     #S-type : (mne) rs2, imm(rs1)   imm = offset
@@ -149,18 +153,15 @@ class Instruction:
         rs1 = None
         rs2 = None
         rd = self.Operands[0]
-      case _:
-        rs1 = 'a'
-        rs2 = 'b'
-        rd = 'c'
+    
 
     RegDict = {}
     if rs1 and self.checkReg(rs1):
-      RegDict["rs1"] = rs1
+      RegDict["rs1"] = RegisterTable[rs1]
     if rs2 and self.checkReg(rs2):
-      RegDict["rs2"] = rs2
+      RegDict["rs2"] = RegisterTable[rs2]
     if rd and self.checkReg(rd):
-      RegDict["rd"] = rd
+      RegDict["rd"] = RegisterTable[rd]
     
     self._Registers = RegDict
       
