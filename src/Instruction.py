@@ -2,16 +2,24 @@ import re
 
 class Instruction:
   '''
-  Instruction object is exactly one line of assembly (e.g add, s3, s2, s1)
+  Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
   Validates instruction format, mnemonic, registers and immediate where applicable.
   '''
   def __init__(self, instruction):
-    self.instruction = instruction
+    self.Instruction = instruction
     self.Mnemonic = instruction
-    self.Operands = None
     self.Type = None
+    self.Operands = None
     self.Registers = None
     
+  @property
+  def Instruction(self):
+      return self._Instruction
+  @Instruction.setter
+  def Instruction(self, instruction):
+    instruction = instruction.lower().strip()
+    self._Instruction = instruction
+
 
   @property
   def Mnemonic(self):
@@ -41,6 +49,7 @@ class Instruction:
     for type in Instructions:
       if self.Mnemonic in Instructions[type]:
         self._Type = type
+    
       
 
 
@@ -56,7 +65,7 @@ class Instruction:
 
     '''
 
-    if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
+    if inst_half := self.Instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
 
       operand_list = inst_half.split(",")            #Split into individual operands
       operands = [operand.lower() and operand.strip() for operand in operand_list] #Strip whitespace and lower operands for error checking
@@ -66,7 +75,7 @@ class Instruction:
       raise ValueError
     
   
-  def check_Format(self):
+  def check_Format(self, instruction):
     '''
     checks if operands are in the correct format according to instruction type
     Does not check if operands are correct.
@@ -77,20 +86,20 @@ class Instruction:
       case "R-type" | "I-type" | "B-type" :
         
                   # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+ *, *[a-zA-Z]+$", self.instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+ *, *[a-zA-Z]+$", instruction, re.IGNORECASE):
           return True
         
       case "S-type":
                  # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+\([a-zA-Z]+\)$", self.instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+\([a-zA-Z]+\)$", instruction, re.IGNORECASE):
           return True
 
       case "U-type" | "J-type":
                  # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+$", self.instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+$", instruction, re.IGNORECASE):
           return True
         
-    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.instruction}'\n Should be in format: '{self.Valid_format}'") 
+    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{instruction}'\n Should be in format: '{self.Valid_format}'") 
           
      
       

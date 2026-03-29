@@ -23,7 +23,7 @@ def test_mnemonic_type(input_inst, expected_mnemonic, expected_type):
         ("addi s10, t0, 10", ["s10", "t0", "10"] ),  
         ("sw a0, 12(t5)", ["a0", "12(t5)"] ), 
         ("beq s11, zero, label", ["s11", "zero", "label"] ),  
-        ("lui t6, 0xABCDEF", ["t6", "0xABCDEF"] ),   
+        ("lui t6, 0xABCDEF", ["t6", "0xabcdef"] ),   
         ("jal ra, label", ["ra", "label"] ), 
 
 
