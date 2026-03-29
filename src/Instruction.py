@@ -46,12 +46,17 @@ class Instruction:
   @property
   def Operands(self, _=None):
     return self._Operands
+  
   @Operands.setter
   def Operands(self, _):
+
     if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
-      operands = inst_half.split(",")            #Split into individual operands
+      operand_list = inst_half.split(",")            #Split into individual operands
+      operands = [operand.lower() and operand.strip() for operand in operand_list] #Strip whitespace and lower operands for error checking
+
       if self.checkOperands(operands):
         self._Operands = operands
+
     else:
       raise ValueError
     
@@ -134,7 +139,7 @@ class Instruction:
           
         
       
-
+#Look up table of the RISC-V register file used for register validation and conversion to its corresponding number. 
 RegisterTable = {
    "zero":0, "x0":0,
    "ra":1, "x1":1,
