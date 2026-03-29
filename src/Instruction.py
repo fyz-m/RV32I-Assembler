@@ -49,27 +49,64 @@ class Instruction:
   
   @Operands.setter
   def Operands(self, _):
+    '''
+    Returns the list of operands in an instruction without whitespace and in lowercase
+    Format of instruction is error checked
+
+    '''
 
     if inst_half := self.instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
+
       operand_list = inst_half.split(",")            #Split into individual operands
       operands = [operand.lower() and operand.strip() for operand in operand_list] #Strip whitespace and lower operands for error checking
-
-      if self.checkOperands(operands):
-        self._Operands = operands
+      self._Operands = operands
 
     else:
       raise ValueError
     
   
-  def checkOperands(self, operands):
+  def check_Format(self):
     '''
     checks if operands are in the correct format according to instruction type
     Does not check if operands are correct.
     e.g R-type instructions are in the format "mnemonic a, b, c"
     '''
-    return operands
+    match self.Type:
 
+      case "R-type" | "I-type" | "B-type" :
+        
+                  # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+ *, *[a-zA-Z]+$", self.instruction, re.IGNORECASE):
+          return True
+        
+      case "S-type":
+                 # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+\([a-zA-Z]+\)$", self.instruction, re.IGNORECASE):
+          return True
 
+      case "U-type" | "J-type":
+                 # mnemonic space(req.), operand, operand - whitespace next to operands ignored
+        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+$", self.instruction, re.IGNORECASE):
+          return True
+        
+    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.instruction}'\n Should be in format: '{self.Valid_format}'") 
+          
+     
+      
+  
+  def Valid_format(self):
+    match self.Type:
+      case "R-type":
+        return "(mnemonic) rd, rs1, rs2"
+      case "I-type":
+        return "(mnemonic) rd, rs1, imm"
+      case "S-type":
+        return "(mnemonic) rs2, imm(rs1)"
+      case "B-type":
+        return "(mnemonic) rs1, rs2, label"
+      case "U-type" | "J-type":
+        return "(mnemonic) rd, imm"
+      
   
   @property
   def Registers(self):
@@ -136,6 +173,7 @@ class Instruction:
           return True
         else:
           return False
+        
           
         
       
