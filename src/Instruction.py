@@ -135,7 +135,7 @@ class Instruction:
         rd = self.Operands[0]
         
       case "S-type":
-        rs1 = re.search(r".+(.+)", self.Operands[1]).groups(1)
+        rs1 = re.search(r"\((.*)\)", self.Operands[1] ).group(1)
         rs2 = self.Operands[0]
         rd = None
 
@@ -173,7 +173,7 @@ class Instruction:
         if register in RegisterTable:
           return True
         else:
-          return False
+          raise ValueError(f"Invalid register: '{register}'")
         
           
         
