@@ -58,12 +58,14 @@ class Instruction:
     return self._Type
   @Type.setter
   def Type(self, _=None):
+    '''
+    Set instruction type based on the mnemonic
+    E.g "add" sets type to "R-type" 
+    '''
     for type in Instructions:
       if self.Mnemonic in Instructions[type]:
         self._Type = type
     
-      
-
 
   @property
   def Operands(self, _=None):
@@ -73,18 +75,19 @@ class Instruction:
   def Operands(self, _):
     '''
     Returns the list of operands in an instruction without whitespace and in lowercase
-    Format of instruction is error checked
-
     '''
+    # Instruction without mnemonic (contains operands)
+    inst_half = self.Instruction.split(" ", 1)[1]
 
-    if inst_half := self.Instruction.split(" ", 1)[1]: #Instruction without mnemonic (contains operands)
+    # Split into individual operands
+    # Operands are seperated by commas in assembly, e.g s1, s2, s3
+    operand_list = inst_half.split(",")       
 
-      operand_list = inst_half.split(",")            #Split into individual operands
-      operands = [operand.lower() and operand.strip() for operand in operand_list] #Strip whitespace and lower operands for error checking
-      self._Operands = operands
+    # Strip whitespace and lowercase  operands
+    operands = [operand.lower() and operand.strip() for operand in operand_list] 
+    self._Operands = operands
 
-    else:
-      raise ValueError
+
     
   
   def check_Format(self, instruction):
