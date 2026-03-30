@@ -43,8 +43,9 @@ class Instruction:
      # There must be whitespace between the mnemonic and operands
      mnemonic = self.Instruction.split(" ", 1)[0]
      
-     for type in Instructions:
-      if mnemonic in Instructions[type]:
+     # Check if mnemonic is in Instructions symbol table
+     for type in Instructions.values():
+      if mnemonic in type:
         self._Mnemonic = mnemonic
         return           
         
