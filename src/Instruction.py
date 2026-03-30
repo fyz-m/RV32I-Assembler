@@ -34,20 +34,23 @@ class Instruction:
     return self._Mnemonic
   
   @Mnemonic.setter
-  def Mnemonic(self, instruction):
+  def Mnemonic(self, _=None):
+     '''
+     Extract the mnemonic from instruction (e.g add)
+     Check if mnemonic is a valid/supported operation i.e is in the instruction symbol table
+     '''
+     # Mnemonic is the first set of characters in an assembly instruction, specifying the operation to perform on the given operands
+     # There must be whitespace between the mnemonic and operands
+     mnemonic = self.Instruction.split(" ", 1)[0]
      
-     if mnemonic := instruction.split(" ", 1)[0]:
-      for type in Instructions:
-        if mnemonic in Instructions[type]:
-          self._Mnemonic = mnemonic
-          return None          
-        else:
-          pass
+     for type in Instructions:
+      if mnemonic in Instructions[type]:
+        self._Mnemonic = mnemonic
+        return           
         
-      raise ValueError(f"Invalid instruction: '{mnemonic}'")  
+     raise ValueError(f"Invalid or unsupported instruction: '{mnemonic}' \n Check documentation for all supported operations")  
         
-     else:
-      raise ValueError(f"Invalid instruction: '{instruction}'")
+     
      
   @property
   def Type(self):
