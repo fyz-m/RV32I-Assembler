@@ -7,10 +7,12 @@ class Instruction:
   '''
   def __init__(self, instruction):
     self.Instruction = instruction
-    self.Mnemonic = instruction
+    self.Mnemonic = None
     self.Type = None
     self.Operands = None
     self.Registers = None
+    
+    
     
   @property
   def Instruction(self):
@@ -90,7 +92,7 @@ class Instruction:
 
     
   
-  def check_Format(self, instruction):
+  def check_Format(self):
     '''
     checks if operands are in the correct format according to instruction type
     Does not check if operands are correct.
@@ -101,20 +103,22 @@ class Instruction:
       case "R-type" | "I-type" | "B-type" :
         
                   # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+ *, *[a-zA-Z]+$", instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
           return True
         
       case "S-type":
+
                  # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+\([a-zA-Z]+\)$", instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+\([a-z0-9]+\)$", self.Instruction):
           return True
 
       case "U-type" | "J-type":
+
                  # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if _ := re.match(r"^[a-zA-Z]+ +, *[a-zA-Z]+ *, *[a-zA-Z]+$", instruction, re.IGNORECASE):
+        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
           return True
         
-    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{instruction}'\n Should be in format: '{self.Valid_format}'") 
+    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\n Should be in format: '{self.Valid_format}'") 
           
      
       

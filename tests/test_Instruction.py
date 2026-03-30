@@ -59,3 +59,18 @@ def test_Registers(input_inst, expected_registers):
   instruction = Instruction(input_inst)
   assert instruction.Registers == expected_registers
 
+@pytest.mark.parametrize("input_inst",[
+        ("add s3, s1, s2"),   
+        ("addi s3, s1, 10"),  
+        ("sw s3, 12(s2)"), 
+        ("beq s3, s1, label"),  
+        ("lui s3, 0xABCDEF"),   
+        ("jal ra, label"), 
+
+
+])
+
+def test_check_format(input_inst):
+  instruction = Instruction(input_inst)
+  assert instruction.check_Format() == True
+  
