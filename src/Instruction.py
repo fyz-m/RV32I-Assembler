@@ -15,10 +15,18 @@ class Instruction:
   @property
   def Instruction(self):
       return self._Instruction
+  
   @Instruction.setter
   def Instruction(self, instruction):
-    instruction = instruction.lower().strip()
-    self._Instruction = instruction
+    '''
+    Initialize instruction by lowercasing and striping whitespace
+    Basic format checking
+    '''
+    # instruction is not in format "mnemonic operands"
+    if len( instruction.split(" ", 1)) != 2:
+      raise ValueError(f"Invalid instruction format:'{instruction}' \nExpected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' ")
+
+    self._Instruction = instruction.lower().strip()
 
 
   @property
