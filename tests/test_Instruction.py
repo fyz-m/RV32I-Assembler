@@ -59,6 +59,8 @@ def test_Registers(input_inst, expected_registers):
   instruction = Instruction(input_inst)
   assert instruction.Registers == expected_registers
 
+  
+
 @pytest.mark.parametrize("input_inst",[
         ("add s3, s1, s2"),   
         ("addi s3, s1, 10"),  

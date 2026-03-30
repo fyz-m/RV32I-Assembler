@@ -94,16 +94,17 @@ class Instruction:
   
   def check_Format(self):
     '''
-    checks if operands are in the correct format according to instruction type
-    Does not check if operands are correct.
-    e.g R-type instructions are in the format "mnemonic a, b, c"
+    Checks if operands are in the correct format according to instruction type
+    e.g R-type instructions are in the format "mnemonic rd, rs1, rs2"
     '''
+
+    # Extract individual operands and check their validity
     match self.Type:
 
       case "R-type" | "I-type" | "B-type" :
         
                   # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
+        if _ := re.match(r"^[a-z]+ +([a-z0-9])+ *, *([a-z0-9])+ *, *([a-z0-9])+$", self.Instruction):
           return True
         
       case "S-type":
@@ -118,10 +119,32 @@ class Instruction:
         if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
           return True
         
-    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\n Should be in format: '{self.Valid_format}'") 
+    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
           
      
-      
+  def check_Operands(rs1=0, rs2=0, rd=0, imm=0):
+    '''
+    Checks if operands are valid
+    Registers should be in the register file of RISC-V
+    Immediates should be valid according to RV32I spec
+    '''
+
+  def checkReg(self, register):
+
+        if register in RegisterTable:
+          return True
+        else:
+          raise ValueError(f"Invalid register: '{register}'")
+        
+  def checkImm(self, immediate):
+          '''
+          Checks if immediate value is valid
+
+          I/S/B type should be <= 12-bit 
+            - I-type shifts should be <= 5-bit since shifting more than 32 bits is redundant (32-bit register size)
+
+          U/J type should be <= 20-bit 
+          '''
   
   def Valid_format(self):
     match self.Type:
@@ -135,7 +158,8 @@ class Instruction:
         return "(mnemonic) rs1, rs2, label"
       case "U-type" | "J-type":
         return "(mnemonic) rd, imm"
-      
+
+
   
   @property
   def Registers(self):
@@ -184,11 +208,11 @@ class Instruction:
     
 
     RegDict = {}
-    if rs1 and self.checkReg(rs1):
+    if rs1:
       RegDict["rs1"] = RegisterTable[rs1]
-    if rs2 and self.checkReg(rs2):
+    if rs2:
       RegDict["rs2"] = RegisterTable[rs2]
-    if rd and self.checkReg(rd):
+    if rd:
       RegDict["rd"] = RegisterTable[rd]
     
     self._Registers = RegDict
@@ -196,14 +220,7 @@ class Instruction:
     
   
   
-  def checkReg(self, register):
 
-        if register in RegisterTable:
-          return True
-        else:
-          raise ValueError(f"Invalid register: '{register}'")
-        
-          
         
       
 #Look up table of the RISC-V register file used for register validation and conversion to its corresponding number. 
