@@ -145,12 +145,11 @@ class Instruction:
   
   @imm.setter
   def imm(self, immediate):
-
-    #convert immediate to int before checking
+    # Convert immediate to decimal
     try:
       immediate = int(f"{immediate}", 0)
     except ValueError:
-      InstructionError(f"Invalid immediate: '{immediate}'  \nImmediates must be either: \nDecimal \nHexadecimal prefixed with '0x' \nBinary prefixed with '0b'")
+      raise InstructionError(f"Invalid immediate: '{immediate}'  \nImmediates must be either: \n -Decimal \n -Hexadecimal prefixed with '0x' \n -Binary prefixed with '0b'")
       
 
     if self.check_Immediate(immediate):
