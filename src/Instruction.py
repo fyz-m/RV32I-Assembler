@@ -1,5 +1,5 @@
 import re
-
+from src.isa import REGISTER_FILE, INSTRUCTION_SET
 class Instruction:
   '''
   Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
@@ -45,8 +45,8 @@ class Instruction:
      # There must be whitespace between the mnemonic and operands
      mnemonic = self.Instruction.split(" ", 1)[0]
      
-     # Check if mnemonic is in Instructions symbol table
-     for type in Instructions.values():
+     # Check if mnemonic is in INSTRUCTION_SET look-up table
+     for type in INSTRUCTION_SET.values():
       if mnemonic in type:
         self._Mnemonic = mnemonic
         return           
@@ -64,8 +64,8 @@ class Instruction:
     Set instruction type based on the mnemonic
     E.g "add" sets type to "R-type" 
     '''
-    for type in Instructions:
-      if self.Mnemonic in Instructions[type]:
+    for type in INSTRUCTION_SET:
+      if self.Mnemonic in INSTRUCTION_SET[type]:
         self._Type = type
     
 
@@ -131,7 +131,7 @@ class Instruction:
 
   def checkReg(self, register):
 
-        if register in RegisterTable:
+        if register in REGISTER_FILE:
           return True
         else:
           raise ValueError(f"Invalid register: '{register}'")
@@ -209,11 +209,11 @@ class Instruction:
 
     RegDict = {}
     if rs1:
-      RegDict["rs1"] = RegisterTable[rs1]
+      RegDict["rs1"] = REGISTER_FILE[rs1]
     if rs2:
-      RegDict["rs2"] = RegisterTable[rs2]
+      RegDict["rs2"] = REGISTER_FILE[rs2]
     if rd:
-      RegDict["rd"] = RegisterTable[rd]
+      RegDict["rd"] = REGISTER_FILE[rd]
     
     self._Registers = RegDict
       
