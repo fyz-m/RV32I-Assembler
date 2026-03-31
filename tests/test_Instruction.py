@@ -72,7 +72,25 @@ def test_checkreg(input_inst):
         assert instruction.check_reg("add x17")
         assert instruction.check_reg("zerox0")
         
+def test_immediate_setter():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "I-type"
 
+   instruction.imm = "0xABC"
+   instruction.imm = "0b10011"
+   instruction.imm = "0XABC"
+   instruction.imm = "0B10011"
+
+   with pytest.raises(InstructionError):
+       instruction.imm = "Integer"
+       instruction.imm = "ABC"
+       instruction.imm = "1011"
+       instruction.imm = "0xHexadecimal"
+       instruction.imm = "12.5"
+       instruction.imm = "100.1"
+       instruction.imm = "-200.5"
+       instruction.imm = "0b110.1"
+    
 def test_check_immediate_I_S_type():
    instruction = Instruction("add s1, s2, s3")
    instruction._Type = "I-type"
