@@ -73,10 +73,29 @@ class Instruction:
   @property
   def op(self):
     return self._op
+  
   @op.setter
   def op(self, opcode):
     if opcode == INSTRUCTION_SET[self.type][self.Mnemonic]["op"]:
       self._op = opcode
+
+  @property
+  def func3(self):
+    return self._func3
+  
+  @func3.setter
+  def func3(self, func3):
+    if func3 == INSTRUCTION_SET[self.type][self.Mnemonic]["func3"]:
+      self._func3 = func3
+
+  @property
+  def func7(self):
+    return self._func7
+  
+  @func7.setter
+  def func7(self, func7):
+    if func7 == INSTRUCTION_SET[self.type][self.Mnemonic]["func7"]:
+      self._func7 = func7
 
   @property
   def rs1(self):
