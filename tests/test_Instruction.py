@@ -1,4 +1,4 @@
-from src.Instruction import Instruction
+from src.Instruction import Instruction, InstructionError
 import pytest
 
 '''@pytest.mark.parametrize("input_inst, expected_mnemonic, expected_type",[
@@ -39,7 +39,7 @@ def test_checkreg(input_inst):
   assert instruction.check_reg("x14") == True
   assert instruction.check_reg("x1") == True
   
-  with pytest.raises(ValueError):
+  with pytest.raises(InstructionError):
         assert instruction.check_reg("s1,s2")
         assert instruction.check_reg("s3 s4")
 
@@ -83,7 +83,7 @@ def test_check_immediate_I_S_type():
    assert instruction.check_Immediate(-4096) == True 
    assert instruction.check_Immediate(4095) == True 
 
-   with pytest.raises(ValueError):
+   with pytest.raises(InstructionError):
       assert instruction.check_Immediate(20000)
       assert instruction.check_Immediate(4096)
       assert instruction.check_Immediate(-4097)
@@ -99,7 +99,7 @@ def test_check_immediate_I_type_shift():
    assert instruction.check_Immediate(31) == True 
    
 
-   with pytest.raises(ValueError):
+   with pytest.raises(InstructionError):
       assert instruction.check_Immediate(33)
       assert instruction.check_Immediate(400)
       assert instruction.check_Immediate(-1)
@@ -114,7 +114,7 @@ def test_check_immediate_B_type():
    assert instruction.check_Immediate(8191) == True
    assert instruction.check_Immediate(-8192) == True
 
-   with pytest.raises(ValueError):
+   with pytest.raises(InstructionError):
       assert instruction.check_Immediate(8192)
       assert instruction.check_Immediate(8200)      
       assert instruction.check_Immediate(-8193)
@@ -130,7 +130,7 @@ def test_check_immediate_U_type():
    assert instruction.check_Immediate(1048574) == True
    assert instruction.check_Immediate(-1048575) == True
 
-   with pytest.raises(ValueError):
+   with pytest.raises(InstructionError):
       assert instruction.check_Immediate(1048576)
       assert instruction.check_Immediate(-1048577)      
       assert instruction.check_Immediate(-10000000)
@@ -147,7 +147,7 @@ def test_check_immediate_J_type():
    assert instruction.check_Immediate(2097150) == True
    assert instruction.check_Immediate(-2097151) == True
 
-   with pytest.raises(ValueError):
+   with pytest.raises(InstructionError):
       assert instruction.check_Immediate(2097152)
       assert instruction.check_Immediate(-2097153)      
       assert instruction.check_Immediate(-10000000)
