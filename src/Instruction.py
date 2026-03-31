@@ -92,42 +92,49 @@ class Instruction:
 
     
   
-  def check_Format(self):
+  def extract_operands(self):
     '''
     Checks if operands are in the correct format according to instruction type
     e.g R-type instructions are in the format "mnemonic rd, rs1, rs2"
+    Extract operands
     '''
 
-    # Extract individual operands and check their validity
     match self.Type:
 
-      case "R-type" | "I-type" | "B-type" :
+      case "R-type" | "I-type" | "B-type":
         
-                  # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if _ := re.match(r"^[a-z]+ +([a-z0-9])+ *, *([a-z0-9])+ *, *([a-z0-9])+$", self.Instruction):
+        # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *([a-z0-9]+)$", self.Instruction):
+          if self.Type == "R-type":
+            #R-type : (mne) rd, rs1, rs2
+            self.rd, self.rs1, self.rs2 = operands.groups()
+          if self.Type == "I-type":
+            #I-type : (mne) rd, rs1, imm
+            self.rd, self.rs1, self.imm = operands.groups()
+          if self.Type == "B-type":
+            #B-type : (mne) rs1, rs2, imm   imm = branch offset
+            self.rs1, self.rs, self.imm = operands.groups()
+
           return True
         
       case "S-type":
 
-                 # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
-        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+\([a-z0-9]+\)$", self.Instruction):
+        # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
+          #S-type : (mne) rs2, imm(rs1)   imm = offset
+          self.rs2, self.imm, self.rs1 = operands.groups()
           return True
 
       case "U-type" | "J-type":
 
-                 # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if _ := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
+        # mnemonic space(req.), operand, operand - whitespace next to operands ignored
+        if operands  := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
+          self.rd, self.imm = operands.groups()
           return True
         
     raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
           
      
-  def check_Operands(rs1=0, rs2=0, rd=0, imm=0):
-    '''
-    Checks if operands are valid
-    Registers should be in the register file of RISC-V
-    Immediates should be valid according to RV32I spec
-    '''
 
   def checkReg(self, register):
 
@@ -214,12 +221,7 @@ class Instruction:
     '''
     Converts registers into their corresponding number after validation
     '''
-    #R-type : (mne) rd, rs1, rs2
-    #I-type : (mne) rd, rs1, imm
-    #S-type : (mne) rs2, imm(rs1)   imm = offset
-    #B-type : (mne) rs1, rs2, imm   imm = branch offset
-    #U-type : (mne) rd, imm
-    #J-type : (mne) rd, imm
+  
     match self.Type:
       case "R-type":
         rs1 = self.Operands[1]
