@@ -51,7 +51,9 @@ INSTRUCTION_SET = {
     "sltu": { "op": 51, "func3": 3, "func7": 0},
     "xor": { "op": 51, "func3": 4, "func7": 0},
     "srl": { "op": 51, "func3": 5, "func7": 0},
-    "sra": { "op": 51, "func3": 5, "func7": 32}
+    "sra": { "op": 51, "func3": 5, "func7": 32},
+    "or": { "op": 51, "func3": 6, "func7": 0},
+    "and": { "op": 51, "func3": 7, "func7": 0},
   },
 
   "I-type": {
