@@ -89,10 +89,10 @@ def test_checkreg(input_inst):
         assert instruction.check_reg("zerox0")
         
 
-def test_check_immediate_I_type():
+def test_check_immediate_I_S_type():
    instruction = Instruction("add s1, s2, s3")
    instruction._Type = "I-type"
-
+   
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(23) == True 
    assert instruction.check_Immediate(-400) == True 
@@ -122,9 +122,52 @@ def test_check_immediate_I_type_shift():
       assert instruction.check_Immediate(-31)
       assert instruction.check_Immediate(-32)
        
+def test_check_immediate_B_type():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "B-type"
 
+   assert instruction.check_Immediate(0) == True
+   assert instruction.check_Immediate(8191) == True
+   assert instruction.check_Immediate(-8192) == True
 
-  
+   with pytest.raises(ValueError):
+      assert instruction.check_Immediate(8192)
+      assert instruction.check_Immediate(8200)      
+      assert instruction.check_Immediate(-8193)
+      assert instruction.check_Immediate(-20000)
+
+def test_check_immediate_U_type():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "U-type"
+
+   assert instruction.check_Immediate(0) == True
+   assert instruction.check_Immediate(1048575) == True
+   assert instruction.check_Immediate(-1048576) == True
+   assert instruction.check_Immediate(1048574) == True
+   assert instruction.check_Immediate(-1048575) == True
+
+   with pytest.raises(ValueError):
+      assert instruction.check_Immediate(1048576)
+      assert instruction.check_Immediate(-1048577)      
+      assert instruction.check_Immediate(-10000000)
+      assert instruction.check_Immediate(2400000)  
+
+def test_check_immediate_J_type():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "J-type"
+
+   assert instruction.check_Immediate(0) == True
+   assert instruction.check_Immediate(40000) == True
+   assert instruction.check_Immediate(2097151) == True
+   assert instruction.check_Immediate(-2097152) == True
+   assert instruction.check_Immediate(2097150) == True
+   assert instruction.check_Immediate(-2097151) == True
+
+   with pytest.raises(ValueError):
+      assert instruction.check_Immediate(2097152)
+      assert instruction.check_Immediate(-2097153)      
+      assert instruction.check_Immediate(-10000000)
+      assert instruction.check_Immediate(2400000)  
 
 @pytest.mark.parametrize("input_inst",[
         ("add s3, s1, s2"),   
