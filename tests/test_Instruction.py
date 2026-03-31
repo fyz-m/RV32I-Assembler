@@ -173,9 +173,9 @@ def test_check_immediate_J_type():
         ("add s3, s1, s2"),   
         ("addi s3, s1, 10"),  
         ("sw s3, 12(s2)"), 
-        ("beq s3, s1, label"),  
-        ("lui s3, 0xABCDEF"),   
-        ("jal ra, label"), 
+        ("beq s3, s1, 47"),  
+        ("lui s3, 0xFFFFF"),   
+        ("jal ra, 0b1011"), 
 
 
 ])

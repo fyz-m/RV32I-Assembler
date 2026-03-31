@@ -4,7 +4,8 @@ from src.isa import REGISTER_FILE, INSTRUCTION_SET
 class Instruction:
   '''
   Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
-  Validates instruction format, mnemonic, registers and immediate where applicable.
+  Validates instruction format, mnemonic, registers and immediate.
+
   '''
   def __init__(self, instruction):
     self.Instruction = instruction
@@ -52,8 +53,7 @@ class Instruction:
         
      raise ValueError(f"Invalid or unsupported instruction: '{mnemonic}' \n Check documentation for all supported operations")  
         
-     
-     
+        
   @property
   def Type(self):
     return self._Type
@@ -67,6 +67,13 @@ class Instruction:
       if self.Mnemonic in INSTRUCTION_SET[type]:
         self._Type = type
     
+  @property
+  def op(self):
+    return self._op
+  @op.setter
+  def op(self):
+    '''Verify opcode'''
+
   @property
   def rs1(self):
     return self._rs1
@@ -106,9 +113,14 @@ class Instruction:
   
   @imm.setter
   def imm(self, immediate):
-    #TODO:
+
     #convert immediate to int before checking
-    #self.imm should return the immediate in binary
+    try:
+      immediate = int(f"{immediate}", 0)
+    except ValueError:
+      ...
+      #raise custom error
+
     if self.check_Immediate(immediate):
       self._imm = immediate
     
