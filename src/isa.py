@@ -32,7 +32,6 @@ REGISTER_FILE = {
    "t4":29, "x29":29,
    "t5":30, "x30":30,
    "t6":31, "x31":31,
-   None: None
 }
 
 INSTRUCTION_SET = {

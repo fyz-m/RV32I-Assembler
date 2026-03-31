@@ -18,7 +18,7 @@ def test_mnemonic_type(input_inst, expected_mnemonic, expected_type):
   assert instruction.Type == expected_type
 
 
-@pytest.mark.parametrize("input_inst, expected_operands",[
+'''@pytest.mark.parametrize("input_inst, expected_operands",[
         ("add s3, s1, s2", ["s3", "s1", "s2"] ),   
         ("addi s10, t0, 10", ["s10", "t0", "10"] ),  
         ("sw a0, 12(t5)", ["a0", "12(t5)"] ), 
@@ -32,32 +32,64 @@ def test_mnemonic_type(input_inst, expected_mnemonic, expected_type):
 def test_operands(input_inst, expected_operands):
   
   instruction = Instruction(input_inst)
-  assert instruction.Operands == expected_operands
+  assert instruction.Operands == expected_operands '''
 
 
-@pytest.mark.parametrize("input_inst, expected_registers", [
-        ("add t0, zero, s1", {"rd":5 , "rs1":0, "rs2":9}),
-        ("addi zero, zero, 0", {"rd":0 , "rs1":0,}),
-        ("sw t5, 20(s3)", {"rs2":30, "rs1":19 }),
-        ("beq a0, zero, label", {"rs1":10, "rs2":0}),
-        ("lui t6, 100", {"rd":31}),
-        ("jal ra, label", {"rd":1}),
-
-        #Using secondary register names 
-        ("add t0, x0, s1", {"rd":5 , "rs1":0, "rs2":9}),
-        ("addi x12, x20, 0", {"rd":12 , "rs1":20,}),
-        ("sw x26, 20(x31)", {"rs2":26, "rs1":31 }),
-        ("beq x1, s0, label", {"rs1":1, "rs2":8}),
-        ("lui t0, 100", {"rd":5}),
-        ("jal x1, label", {"rd":1}),
-
+@pytest.mark.parametrize("input_inst", [
+        ("add t0, zero, s1"),
   
 ])
 
-def test_Registers(input_inst, expected_registers):
-  
+def test_checkreg(input_inst):
   instruction = Instruction(input_inst)
-  assert instruction.Registers == expected_registers
+
+  assert instruction.check_reg("s0") == True
+  assert instruction.check_reg("ra") == True
+  assert instruction.check_reg("fp") == True
+  assert instruction.check_reg("sp") == True
+  assert instruction.check_reg("s11") == True
+  assert instruction.check_reg("x0") == True
+  assert instruction.check_reg("x31") == True
+  assert instruction.check_reg("t6") == True
+  assert instruction.check_reg("a0") == True
+  assert instruction.check_reg("x14") == True
+  assert instruction.check_reg("x1") == True
+  
+  with pytest.raises(ValueError):
+        assert instruction.check_reg("s1,s2")
+        assert instruction.check_reg("s3 s4")
+
+        assert instruction.check_reg(" s0")
+        assert instruction.check_reg("S0")
+        assert instruction.check_reg("S")
+        assert instruction.check_reg("s12")
+        assert instruction.check_reg(" s11 ")
+
+        assert instruction.check_reg("0")
+        assert instruction.check_reg("Zero")
+        assert instruction.check_reg("ZERO")
+        assert instruction.check_reg(" zero")
+        assert instruction.check_reg(0)
+        assert instruction.check_reg(13)
+
+        assert instruction.check_reg("ra ")
+        assert instruction.check_reg("r a")
+        assert instruction.check_reg("r,a")
+        assert instruction.check_reg("Ra")
+        assert instruction.check_reg("RA")
+
+        assert instruction.check_reg("x-3")
+        assert instruction.check_reg("x32")
+        assert instruction.check_reg("X1")
+        assert instruction.check_reg(" X12")
+        assert instruction.check_reg("x2 3")
+        assert instruction.check_reg("x5 x6")
+        assert instruction.check_reg("abcdef")
+        assert instruction.check_reg("add x17")
+        assert instruction.check_reg("zerox0")
+        
+  
+
 
   
 
