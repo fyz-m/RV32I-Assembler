@@ -1,5 +1,6 @@
 import re
 from src.isa import REGISTER_FILE, INSTRUCTION_SET
+
 class Instruction:
   '''
   Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
@@ -9,8 +10,6 @@ class Instruction:
     self.Instruction = instruction
     self.Mnemonic = None
     self.Type = None
-    self.Operands = None
-    self.Registers = None
     
     
     
@@ -68,29 +67,40 @@ class Instruction:
       if self.Mnemonic in INSTRUCTION_SET[type]:
         self._Type = type
     
+  @property
+  def rs1(self):
+    return self._rs1
+  
+  @rs1.setter
+  def rs1(self, register):
+    #Validate register
+    register.lower().strip()
+    if self.check_reg(register):
+      self._rs1 = register
 
   @property
-  def Operands(self, _=None):
-    return self._Operands
+  def rs2(self):
+    return self._rs2
   
-  @Operands.setter
-  def Operands(self, _):
-    '''
-    Returns the list of operands in an instruction without whitespace and in lowercase
-    '''
-    # Instruction without mnemonic (contains operands)
-    inst_half = self.Instruction.split(" ", 1)[1]
+  @rs2.setter
+  def rs2(self, register):
+    #Validate register
+    register.lower().strip()
+    if self.check_reg(register):
+      self._rs2 = register
 
-    # Split into individual operands
-    # Operands are seperated by commas in assembly, e.g s1, s2, s3
-    operand_list = inst_half.split(",")       
-
-    # Strip whitespace and lowercase  operands
-    operands = [operand.lower() and operand.strip() for operand in operand_list] 
-    self._Operands = operands
-
-
+  @property
+  def rd(self):
+    return self._rd
+  
+  @rd.setter
+  def rd(self, register):
+    #Validate register
+    register.lower().strip()
+    if self.check_reg(register):
+      self._rd = register
     
+
   
   def extract_operands(self):
     '''
@@ -129,6 +139,7 @@ class Instruction:
 
         # mnemonic space(req.), operand, operand - whitespace next to operands ignored
         if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+)$", self.Instruction):
+          #U/J-type : (mne) rd, label
           self.rd, self.imm = operands.groups()
           return True
         
@@ -136,7 +147,7 @@ class Instruction:
           
      
 
-  def checkReg(self, register):
+  def check_reg(self, register):
 
         if register in REGISTER_FILE:
           return True
@@ -211,60 +222,6 @@ class Instruction:
       case "U-type" | "J-type":
         return "(mnemonic) rd, imm"
 
-
-  
-  @property
-  def Registers(self):
-    return self._Registers
-  @Registers.setter
-  def Registers(self, _=None):
-    '''
-    Converts registers into their corresponding number after validation
-    '''
-  
-    match self.Type:
-      case "R-type":
-        rs1 = self.Operands[1]
-        rs2 = self.Operands[2]
-        rd = self.Operands[0]
-
-      case "I-type":
-        rs1 = self.Operands[1]
-        rs2 = None
-        rd = self.Operands[0]
-        
-      case "S-type":
-        rs1 = re.search(r"\((.*)\)", self.Operands[1] ).group(1)
-        rs2 = self.Operands[0]
-        rd = None
-
-      case "B-type":
-        rs1 = self.Operands[0]
-        rs2 = self.Operands[1]
-        rd = None
-
-      case "U-type":
-        rs1 = None
-        rs2 = None
-        rd = self.Operands[0]
-
-      case "J-type":
-        rs1 = None
-        rs2 = None
-        rd = self.Operands[0]
-    
-
-    RegDict = {}
-    if rs1:
-      RegDict["rs1"] = REGISTER_FILE[rs1]
-    if rs2:
-      RegDict["rs2"] = REGISTER_FILE[rs2]
-    if rd:
-      RegDict["rd"] = REGISTER_FILE[rd]
-    
-    self._Registers = RegDict
-      
-    
   
   
 
