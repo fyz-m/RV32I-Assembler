@@ -1,4 +1,11 @@
-#Look up table of the RISC-V register file used for register validation and conversion to its corresponding number. 
+# Contains the RISC-V registers (register file), supported instructions and their control bits (opcode, func3, func7)
+# Used in the Instruction class for:
+# - Register and mnemonic validation 
+# - Looking up field values
+
+
+
+
 REGISTER_FILE = {
    "zero":0, "x0":0,
    "ra":1, "x1":1,
@@ -35,34 +42,35 @@ REGISTER_FILE = {
 }
 
 INSTRUCTION_SET = {
+
   "R-type": {
-    "add": {"controlBits": (51, 0, 0)},  # Controlbits = opcode, func3, func7 
-    "sub": {"controlBits": (51, 0, 32)},
-    "sll": {"controlBits": (51, 1, 0)},
-    "slt": {"controlBits": (51, 2, 0)},
-    "sltu": {"controlBits": (51, 3, 0)},
-    "xor": {"controlBits": (51, 4, 0)},
-    "srl": {"controlBits": (51, 5, 0)},
-    "sra": {"controlBits": (51, 5, 32)}
+    "add": { "op": 51, "func3": 0, "func7": 0},  
+    "sub": { "op": 51, "func3": 0, "func7": 32},
+    "sll": { "op": 51, "func3": 1, "func7": 0},
+    "slt": { "op": 51, "func3": 2, "func7": 0},
+    "sltu": { "op": 51, "func3": 3, "func7": 0},
+    "xor": { "op": 51, "func3": 4, "func7": 0},
+    "srl": { "op": 51, "func3": 5, "func7": 0},
+    "sra": { "op": 51, "func3": 5, "func7": 32}
   },
 
   "I-type": {
-    "addi": {"controlBits": (19, 0, None)},
+    "addi": { "op": 19, "func3": 0, "func7": None},
   },
 
   "S-type": {
-    "sw":{"controlBits": (35, 2, None) },
+    "sw":{ "op": 35, "func3": 2, "func7": None},
   },
 
   "B-type": {
-    "beq":{"controlBits": (99, 0, None) },
+    "beq":{ "op": 99, "func3": 0, "func7": None},
   },
 
   "U-type": {
-   "lui": {"controlBits": (55, None, None) },
+   "lui": { "op": 55, "func3": None, "func7": None},
   },
 
   "J-type": {
-    "jal":{"controlBits": (111, None, None) },
+    "jal":{ "op": 111, "func3": None , "func7": None},
   }
 }
