@@ -71,17 +71,22 @@ INSTRUCTION_SET = {
     "srai": { "op": 19, "func3": 5, "func7": 32 },
     "ori": { "op": 19, "func3": 6, "func7": None},
     "andi": { "op": 19, "func3": 7, "func7": None},
-    "jalr": { "op": 103, "func3": 0, "func7": None},
+    "jalr": { "op": 103, "func3": 0, "func7": None}
   },
 
   "S-type": {
     "sb": { "op": 35, "func3": 0, "func7": None},
     "sh": { "op": 35, "func3": 1, "func7": None},
-    "sw":{ "op": 35, "func3": 2, "func7": None},
+    "sw":{ "op": 35, "func3": 2, "func7": None}
   },
 
   "B-type": {
     "beq":{ "op": 99, "func3": 0, "func7": None},
+    "bne": { "op": 99, "func3": 1, "func7": None},
+    "blt": { "op": 99, "func3": 4, "func7": None},
+    "bge": { "op": 99, "func3": 5, "func7": None},
+    "bltu": { "op": 99, "func3": 6, "func7": None},
+    "bgeu": { "op": 99, "func3": 7, "func7": None}
   },
 
   "U-type": {
