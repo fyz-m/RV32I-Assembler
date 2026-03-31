@@ -88,7 +88,40 @@ def test_checkreg(input_inst):
         assert instruction.check_reg("add x17")
         assert instruction.check_reg("zerox0")
         
-  
+
+def test_check_immediate_I_type():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "I-type"
+
+   assert instruction.check_Immediate(0) == True
+   assert instruction.check_Immediate(23) == True 
+   assert instruction.check_Immediate(-400) == True 
+   assert instruction.check_Immediate(-4096) == True 
+   assert instruction.check_Immediate(4095) == True 
+
+   with pytest.raises(ValueError):
+      assert instruction.check_Immediate(20000)
+      assert instruction.check_Immediate(4096)
+      assert instruction.check_Immediate(-4097)
+
+def test_check_immediate_I_type_shift():
+   instruction = Instruction("add s1, s2, s3")
+   instruction._Type = "I-type"
+   instruction._Mnemonic = "slli"
+
+   assert instruction.check_Immediate(0) == True
+   assert instruction.check_Immediate(23) == True 
+   assert instruction.check_Immediate(32) == True 
+   assert instruction.check_Immediate(31) == True 
+   
+
+   with pytest.raises(ValueError):
+      assert instruction.check_Immediate(33)
+      assert instruction.check_Immediate(400)
+      assert instruction.check_Immediate(-1)
+      assert instruction.check_Immediate(-31)
+      assert instruction.check_Immediate(-32)
+       
 
 
   

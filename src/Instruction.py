@@ -154,8 +154,9 @@ class Instruction:
         else:
           raise ValueError(f"Invalid register: '{register}'")
         
-  def checkImm(self, immediate):
+  def check_Immediate(self, immediate):
           '''
+          Takes an integer as input
           Checks if immediate value is valid
 
           I/S-type should be <= 12-bit 
