@@ -72,7 +72,7 @@ def test_Registers(input_inst, expected_registers):
 
 ])
 
-def test_check_format(input_inst):
+def test_extract_operands(input_inst):
   instruction = Instruction(input_inst)
-  assert instruction.check_Format() == True
+  assert instruction.extract_operands() == True
   

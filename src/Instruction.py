@@ -128,7 +128,7 @@ class Instruction:
       case "U-type" | "J-type":
 
         # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if operands  := re.match(r"^[a-z]+ +[a-z0-9]+ *, *[a-z0-9]+$", self.Instruction):
+        if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+)$", self.Instruction):
           self.rd, self.imm = operands.groups()
           return True
         
