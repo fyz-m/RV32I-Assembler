@@ -13,6 +13,10 @@ class Instruction:
     self.Type = None
     self.extract_operands()
 
+    self.op = INSTRUCTION_SET[self.type][self.Mnemonic]["op"]
+    self.func3 = INSTRUCTION_SET[self.type][self.Mnemonic]["func3"]
+    self.func7 = INSTRUCTION_SET[self.type][self.Mnemonic]["func7"]
+
 
     
     
@@ -54,7 +58,7 @@ class Instruction:
         self._Mnemonic = mnemonic
         return           
         
-     raise ValueError(f"Invalid or unsupported instruction: '{mnemonic}' \n Check documentation for all supported operations")  
+     raise ValueError(f"Invalid or unsupported instruction: '{mnemonic}' \nCheck documentation for all supported operations")  
         
         
   @property
@@ -77,7 +81,8 @@ class Instruction:
   @op.setter
   def op(self, opcode):
     if opcode == INSTRUCTION_SET[self.type][self.Mnemonic]["op"]:
-      self._op = opcode
+      # Convert opcode to 7-bit binary
+      self._op = f"{opcode}:07b"
 
   @property
   def func3(self):
@@ -86,7 +91,8 @@ class Instruction:
   @func3.setter
   def func3(self, func3):
     if func3 == INSTRUCTION_SET[self.type][self.Mnemonic]["func3"]:
-      self._func3 = func3
+      # Convert func3 to 3-bit binary 
+      self._func3 = f"{func3}:03b"
 
   @property
   def func7(self):
@@ -95,7 +101,8 @@ class Instruction:
   @func7.setter
   def func7(self, func7):
     if func7 == INSTRUCTION_SET[self.type][self.Mnemonic]["func7"]:
-      self._func7 = func7
+      # Convert func7 to 7-bit binary
+      self._func7 = f"{func7}:07b"
 
   @property
   def rs1(self):
