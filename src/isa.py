@@ -55,7 +55,22 @@ INSTRUCTION_SET = {
   },
 
   "I-type": {
+    "lb": { "op": 3, "func3": 0, "func7": None },
+    "lh": { "op": 3, "func3": 1, "func7": None },
+    "lw": { "op": 3, "func3": 2, "func7": None },
+    "lbu": { "op": 3, "func3": 4, "func7": None },
+    "lhu": { "op": 3, "func3": 5, "func7": None },
     "addi": { "op": 19, "func3": 0, "func7": None},
+    "slli": { "op": 19, "func3": 1, "func7": 0 },
+    "slti": { "op": 19, "func3": 2, "func7": None },
+    "sltiu": { "op": 19, "func3": 3, "func7": None },
+    "xori": { "op": 19, "func3": 4, "func7": None },
+    "srli": { "op": 19, "func3": 5, "func7": 0 },
+    "srai": { "op": 19, "func3": 5, "func7": 32 },
+    "ori": { "op": 19, "func3": 6, "func7": None},
+    "andi": { "op": 19, "func3": 7, "func7": None},
+    "jalr": { "op": 103, "func3": 0, "func7": None},
+
   },
 
   "S-type": {
