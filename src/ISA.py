@@ -1,5 +1,5 @@
 #Look up table of the RISC-V register file used for register validation and conversion to its corresponding number. 
-RegisterTable = {
+REGISTER_FILE = {
    "zero":0, "x0":0,
    "ra":1, "x1":1,
    "sp":2, "x2":2,
@@ -35,7 +35,7 @@ RegisterTable = {
    None: None
 }
 
-Instructions = {
+INSTRUCTION_SET = {
   "R-type": {
     "add": {"controlBits": (51, 0, 0)},  # Controlbits = opcode, func3, func7 
     "sub": {"controlBits": (51, 0, 32)},
