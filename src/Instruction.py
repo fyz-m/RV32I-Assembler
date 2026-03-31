@@ -140,11 +140,56 @@ class Instruction:
           '''
           Checks if immediate value is valid
 
-          I/S/B type should be <= 12-bit 
+          I/S-type should be <= 12-bit 
             - I-type shifts should be <= 5-bit since shifting more than 32 bits is redundant (32-bit register size)
-
-          U/J type should be <= 20-bit 
+          B-type shoulbe be <= 13-bit
+          U-type should be <= 20-bit 
+          J-type should be <= 21-bit
           '''
+          shift_instructions = ["slli", "srli", "srai"]
+
+  
+          # Shift instructions immediate is 5-bits since shifting more than 32-bits is redundant (32-bit registers)
+          # Immediate is unsigned - cannot shift by negative amount.
+          # Add one since range upper limit is exclusive
+          valid_range = range(0, (2*5)+1)
+
+          if self.Mnemonic in shift_instructions:
+            if immediate in valid_range:
+              return True
+            
+
+          match self.Type:
+            case "I-type" | "S-type":
+              # Immediate is a 12-bit signed number (two's complement) 
+              # Signed numbers are in the range: -2^n to 2^n - 1  where n is number of bits
+              # Since upper limit of range is exclusive, subtracting one is not neccesary
+              valid_range = range(-(2*12), 2*12)
+              if immediate in valid_range:
+                return True
+              
+            case "B-type":
+              # Immediate is the branch offset - number of bytes to the label
+              # The immediate is 13-bit signed number
+              valid_range = range(-(2*13), 2*13)
+              if immediate in valid_range:
+                return True
+              
+            case "U-type":
+              # Immediate is a 20-bit signed number
+              valid_range = range(-(2*20), 2*20)
+              if immediate in valid_range:
+                return True
+              
+            case "J-type":
+              # Immediate is the jump offset - number of bytes to the label
+              # Immediate is 21-bit 
+              valid_range = range(-(2*21), 2*21)
+              if immediate in valid_range:
+                return True
+
+          raise ValueError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range}")
+
   
   def Valid_format(self):
     match self.Type:
