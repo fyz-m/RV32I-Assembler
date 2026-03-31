@@ -70,10 +70,11 @@ INSTRUCTION_SET = {
     "ori": { "op": 19, "func3": 6, "func7": None},
     "andi": { "op": 19, "func3": 7, "func7": None},
     "jalr": { "op": 103, "func3": 0, "func7": None},
-
   },
 
   "S-type": {
+    "sb": { "op": 35, "func3": 0, "func7": None},
+    "sh": { "op": 35, "func3": 1, "func7": None},
     "sw":{ "op": 35, "func3": 2, "func7": None},
   },
 
