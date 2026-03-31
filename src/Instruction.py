@@ -1,6 +1,8 @@
 import re
 from src.isa import REGISTER_FILE, INSTRUCTION_SET
 
+class InstructionError(Exception):
+  ...
 class Instruction:
   '''
   Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
@@ -13,9 +15,9 @@ class Instruction:
     self.Type = None
     self.extract_operands()
 
-    self.op = INSTRUCTION_SET[self.type][self.Mnemonic]["op"]
-    self.func3 = INSTRUCTION_SET[self.type][self.Mnemonic]["func3"]
-    self.func7 = INSTRUCTION_SET[self.type][self.Mnemonic]["func7"]
+    self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
+    self.func3 = INSTRUCTION_SET[self.Type][self.Mnemonic]["func3"]
+    self.func7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["func7"]
 
 
     
@@ -33,7 +35,7 @@ class Instruction:
     '''
     # instruction is not in format "mnemonic operands"
     if len( instruction.split(" ", 1)) != 2:
-      raise ValueError(f"Invalid instruction format:'{instruction}' \nExpected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' ")
+      raise InstructionError(f"Invalid instruction format:'{instruction}' \nExpected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' ")
 
     self._Instruction = instruction.lower().strip()
 
@@ -58,7 +60,7 @@ class Instruction:
         self._Mnemonic = mnemonic
         return           
         
-     raise ValueError(f"Invalid or unsupported instruction: '{mnemonic}' \nCheck documentation for all supported operations")  
+     raise InstructionError(f"Invalid or unsupported instruction: '{mnemonic}' \nCheck documentation for all supported operations")  
         
         
   @property
@@ -80,7 +82,7 @@ class Instruction:
   
   @op.setter
   def op(self, opcode):
-    if opcode == INSTRUCTION_SET[self.type][self.Mnemonic]["op"]:
+    if opcode == INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]:
       # Convert opcode to 7-bit binary
       self._op = f"{opcode}:07b"
 
@@ -90,7 +92,7 @@ class Instruction:
   
   @func3.setter
   def func3(self, func3):
-    if func3 == INSTRUCTION_SET[self.type][self.Mnemonic]["func3"]:
+    if func3 == INSTRUCTION_SET[self.Type][self.Mnemonic]["func3"]:
       # Convert func3 to 3-bit binary 
       self._func3 = f"{func3}:03b"
 
@@ -100,7 +102,7 @@ class Instruction:
   
   @func7.setter
   def func7(self, func7):
-    if func7 == INSTRUCTION_SET[self.type][self.Mnemonic]["func7"]:
+    if func7 == INSTRUCTION_SET[self.Type][self.Mnemonic]["func7"]:
       # Convert func7 to 7-bit binary
       self._func7 = f"{func7}:07b"
 
@@ -148,8 +150,8 @@ class Instruction:
     try:
       immediate = int(f"{immediate}", 0)
     except ValueError:
-      ...
-      #raise custom error
+      InstructionError(f"Invalid immediate: '{immediate}'  \nImmediates must be either: \nDecimal \nHexadecimal prefixed with '0x' \nBinary prefixed with '0b'")
+      
 
     if self.check_Immediate(immediate):
       self._imm = immediate
@@ -199,7 +201,7 @@ class Instruction:
           self.rd, self.imm = operands.groups()
           return True
         
-    raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
+    raise InstructionError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
           
      
   def Valid_format(self):
@@ -221,7 +223,7 @@ class Instruction:
         if register in REGISTER_FILE:
           return True
         else:
-          raise ValueError(f"Invalid register: '{register}'")
+          raise InstructionError(f"Invalid register: '{register}'")
         
   def check_Immediate(self, immediate):
           '''
@@ -275,7 +277,7 @@ class Instruction:
               if immediate in valid_range:
                 return True
 
-          raise ValueError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
+          raise InstructionError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
 
   
   
