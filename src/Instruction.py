@@ -11,6 +11,7 @@ class Instruction:
     self.Instruction = instruction
     self.Mnemonic = None
     self.Type = None
+    self.extract_operands()
     
     
     
@@ -83,7 +84,7 @@ class Instruction:
     #Validate register
     register.lower().strip()
     if self.check_reg(register):
-      self._rs1 = register
+      self._rs1 = REGISTER_FILE[f"{register}"]
 
   @property
   def rs2(self):
@@ -94,7 +95,7 @@ class Instruction:
     #Validate register
     register.lower().strip()
     if self.check_reg(register):
-      self._rs2 = register
+      self._rs2 = REGISTER_FILE[f"{register}"]
 
   @property
   def rd(self):
@@ -105,7 +106,7 @@ class Instruction:
     #Validate register
     register.lower().strip()
     if self.check_reg(register):
-      self._rd = register
+      self._rd = REGISTER_FILE[f"{register}"]
 
   @property
   def imm(self):

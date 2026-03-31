@@ -18,22 +18,6 @@ def test_mnemonic_type(input_inst, expected_mnemonic, expected_type):
   assert instruction.Type == expected_type
 
 
-'''@pytest.mark.parametrize("input_inst, expected_operands",[
-        ("add s3, s1, s2", ["s3", "s1", "s2"] ),   
-        ("addi s10, t0, 10", ["s10", "t0", "10"] ),  
-        ("sw a0, 12(t5)", ["a0", "12(t5)"] ), 
-        ("beq s11, zero, label", ["s11", "zero", "label"] ),  
-        ("lui t6, 0xABCDEF", ["t6", "0xabcdef"] ),   
-        ("jal ra, label", ["ra", "label"] ), 
-
-
-])
-
-def test_operands(input_inst, expected_operands):
-  
-  instruction = Instruction(input_inst)
-  assert instruction.Operands == expected_operands '''
-
 
 @pytest.mark.parametrize("input_inst", [
         ("add t0, zero, s1"),
@@ -169,18 +153,22 @@ def test_check_immediate_J_type():
       assert instruction.check_Immediate(-10000000)
       assert instruction.check_Immediate(2400000)  
 
-@pytest.mark.parametrize("input_inst",[
-        ("add s3, s1, s2"),   
-        ("addi s3, s1, 10"),  
-        ("sw s3, 12(s2)"), 
-        ("beq s3, s1, 47"),  
-        ("lui s3, 0xFFFFF"),   
-        ("jal ra, 0b1011"), 
+@pytest.mark.parametrize("input_inst, expected_operands",[
+        ("add s3, s1, s2", {"rs1":9, "rs2":"", "rd":19, "imm":None} ),   
+        ("addi s3, s1, 10", {"rs1":9, "rs2":"", "rd":19, "imm":""} ),  
+        ("sw s3, 12(s2)", {"rs1":18, "rs2":9, "rd":None, "imm":12} ), 
+        ("beq s3, s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":47} ),  
+        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
+        ("jal ra, 0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
 
 
 ])
 
-def test_extract_operands(input_inst):
+def test_extract_operands(input_inst, expected_operands):
   instruction = Instruction(input_inst)
   assert instruction.extract_operands() == True
+  assert instruction.rs1 == expected_operands['rs1']
+  assert instruction.rs2 == expected_operands['rs2']
+  assert instruction.rd == expected_operands['rd']
+  assert instruction.imm == expected_operands['imm']
   
