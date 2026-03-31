@@ -133,7 +133,7 @@ class Instruction:
     e.g R-type instructions are in the format "mnemonic rd, rs1, rs2"
     Extract operands
     '''
-
+ 
     match self.Type:
 
       case "R-type" | "I-type" | "B-type":
@@ -148,7 +148,7 @@ class Instruction:
             self.rd, self.rs1, self.imm = operands.groups()
           if self.Type == "B-type":
             #B-type : (mne) rs1, rs2, imm   imm = branch offset
-            self.rs1, self.rs, self.imm = operands.groups()
+            self.rs1, self.rs2, self.imm = operands.groups()
 
           return True
         
