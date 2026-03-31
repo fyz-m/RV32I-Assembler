@@ -99,6 +99,18 @@ class Instruction:
     register.lower().strip()
     if self.check_reg(register):
       self._rd = register
+
+  @property
+  def imm(self):
+    return self._imm
+  
+  @imm.setter
+  def imm(self, immediate):
+    #TODO:
+    #convert immediate to int before checking
+    #self.imm should return the immediate in binary
+    if self.check_Immediate(immediate):
+      self._imm = immediate
     
 
   
@@ -146,6 +158,19 @@ class Instruction:
     raise ValueError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
           
      
+  def Valid_format(self):
+    match self.Type:
+      case "R-type":
+        return "(mnemonic) rd, rs1, rs2"
+      case "I-type":
+        return "(mnemonic) rd, rs1, imm"
+      case "S-type":
+        return "(mnemonic) rs2, imm(rs1)"
+      case "B-type":
+        return "(mnemonic) rs1, rs2, label"
+      case "U-type" | "J-type":
+        return "(mnemonic) rd, imm"
+
 
   def check_reg(self, register):
 
@@ -209,19 +234,6 @@ class Instruction:
           raise ValueError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range}")
 
   
-  def Valid_format(self):
-    match self.Type:
-      case "R-type":
-        return "(mnemonic) rd, rs1, rs2"
-      case "I-type":
-        return "(mnemonic) rd, rs1, imm"
-      case "S-type":
-        return "(mnemonic) rs2, imm(rs1)"
-      case "B-type":
-        return "(mnemonic) rs1, rs2, label"
-      case "U-type" | "J-type":
-        return "(mnemonic) rd, imm"
-
   
   
 
