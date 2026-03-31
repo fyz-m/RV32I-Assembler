@@ -5,8 +5,79 @@
 
 
 
+INSTRUCTION_SET = {
+
+  "R-type": {
+
+    "add": { "op": 51, "func3": 0, "func7": 0},  
+    "sub": { "op": 51, "func3": 0, "func7": 32},
+    "sll": { "op": 51, "func3": 1, "func7": 0},
+    "slt": { "op": 51, "func3": 2, "func7": 0},
+    "sltu": { "op": 51, "func3": 3, "func7": 0},
+    "xor": { "op": 51, "func3": 4, "func7": 0},
+    "srl": { "op": 51, "func3": 5, "func7": 0},
+    "sra": { "op": 51, "func3": 5, "func7": 32},
+    "or": { "op": 51, "func3": 6, "func7": 0},
+    "and": { "op": 51, "func3": 7, "func7": 0}
+
+  },
+
+  "I-type": {
+
+    "lb": { "op": 3, "func3": 0, "func7": None },
+    "lh": { "op": 3, "func3": 1, "func7": None },
+    "lw": { "op": 3, "func3": 2, "func7": None },
+    "lbu": { "op": 3, "func3": 4, "func7": None },
+    "lhu": { "op": 3, "func3": 5, "func7": None },
+    "addi": { "op": 19, "func3": 0, "func7": None},
+    "slli": { "op": 19, "func3": 1, "func7": 0 },
+    "slti": { "op": 19, "func3": 2, "func7": None },
+    "sltiu": { "op": 19, "func3": 3, "func7": None },
+    "xori": { "op": 19, "func3": 4, "func7": None },
+    "srli": { "op": 19, "func3": 5, "func7": 0 },
+    "srai": { "op": 19, "func3": 5, "func7": 32 },
+    "ori": { "op": 19, "func3": 6, "func7": None},
+    "andi": { "op": 19, "func3": 7, "func7": None},
+    "jalr": { "op": 103, "func3": 0, "func7": None}
+
+  },
+
+  "S-type": {
+
+    "sb": { "op": 35, "func3": 0, "func7": None},
+    "sh": { "op": 35, "func3": 1, "func7": None},
+    "sw":{ "op": 35, "func3": 2, "func7": None}
+
+  },
+
+  "B-type": {
+
+    "beq":{ "op": 99, "func3": 0, "func7": None},
+    "bne": { "op": 99, "func3": 1, "func7": None},
+    "blt": { "op": 99, "func3": 4, "func7": None},
+    "bge": { "op": 99, "func3": 5, "func7": None},
+    "bltu": { "op": 99, "func3": 6, "func7": None},
+    "bgeu": { "op": 99, "func3": 7, "func7": None}
+
+  },
+
+  "U-type": {
+
+   "auipc": { "op": 23, "func3": None, "func7": None},
+   "lui": { "op": 55, "func3": None, "func7": None},
+
+  },
+
+  "J-type": {
+
+    "jal":{ "op": 111, "func3": None , "func7": None},
+
+  }
+}
+
 
 REGISTER_FILE = {
+  
    "zero":0, "x0":0,
    "ra":1, "x1":1,
    "sp":2, "x2":2,
@@ -39,61 +110,5 @@ REGISTER_FILE = {
    "t4":29, "x29":29,
    "t5":30, "x30":30,
    "t6":31, "x31":31,
-}
 
-INSTRUCTION_SET = {
-
-  "R-type": {
-    "add": { "op": 51, "func3": 0, "func7": 0},  
-    "sub": { "op": 51, "func3": 0, "func7": 32},
-    "sll": { "op": 51, "func3": 1, "func7": 0},
-    "slt": { "op": 51, "func3": 2, "func7": 0},
-    "sltu": { "op": 51, "func3": 3, "func7": 0},
-    "xor": { "op": 51, "func3": 4, "func7": 0},
-    "srl": { "op": 51, "func3": 5, "func7": 0},
-    "sra": { "op": 51, "func3": 5, "func7": 32},
-    "or": { "op": 51, "func3": 6, "func7": 0},
-    "and": { "op": 51, "func3": 7, "func7": 0},
-  },
-
-  "I-type": {
-    "lb": { "op": 3, "func3": 0, "func7": None },
-    "lh": { "op": 3, "func3": 1, "func7": None },
-    "lw": { "op": 3, "func3": 2, "func7": None },
-    "lbu": { "op": 3, "func3": 4, "func7": None },
-    "lhu": { "op": 3, "func3": 5, "func7": None },
-    "addi": { "op": 19, "func3": 0, "func7": None},
-    "slli": { "op": 19, "func3": 1, "func7": 0 },
-    "slti": { "op": 19, "func3": 2, "func7": None },
-    "sltiu": { "op": 19, "func3": 3, "func7": None },
-    "xori": { "op": 19, "func3": 4, "func7": None },
-    "srli": { "op": 19, "func3": 5, "func7": 0 },
-    "srai": { "op": 19, "func3": 5, "func7": 32 },
-    "ori": { "op": 19, "func3": 6, "func7": None},
-    "andi": { "op": 19, "func3": 7, "func7": None},
-    "jalr": { "op": 103, "func3": 0, "func7": None}
-  },
-
-  "S-type": {
-    "sb": { "op": 35, "func3": 0, "func7": None},
-    "sh": { "op": 35, "func3": 1, "func7": None},
-    "sw":{ "op": 35, "func3": 2, "func7": None}
-  },
-
-  "B-type": {
-    "beq":{ "op": 99, "func3": 0, "func7": None},
-    "bne": { "op": 99, "func3": 1, "func7": None},
-    "blt": { "op": 99, "func3": 4, "func7": None},
-    "bge": { "op": 99, "func3": 5, "func7": None},
-    "bltu": { "op": 99, "func3": 6, "func7": None},
-    "bgeu": { "op": 99, "func3": 7, "func7": None}
-  },
-
-  "U-type": {
-   "lui": { "op": 55, "func3": None, "func7": None},
-  },
-
-  "J-type": {
-    "jal":{ "op": 111, "func3": None , "func7": None},
-  }
 }
