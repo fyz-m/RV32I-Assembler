@@ -12,6 +12,8 @@ class Instruction:
     self.Mnemonic = None
     self.Type = None
     self.extract_operands()
+
+
     
     
     
@@ -72,8 +74,9 @@ class Instruction:
   def op(self):
     return self._op
   @op.setter
-  def op(self):
-    '''Verify opcode'''
+  def op(self, opcode):
+    if opcode == INSTRUCTION_SET[self.type][self.Mnemonic]["op"]:
+      self._op = opcode
 
   @property
   def rs1(self):
@@ -129,9 +132,11 @@ class Instruction:
   
   def extract_operands(self):
     '''
+    Extract operands and assign them to instance variable e.g obj.rs1 = s0
+    This also validates the operands themselves since they go through their setter
+
     Checks if operands are in the correct format according to instruction type
-    e.g R-type instructions are in the format "mnemonic rd, rs1, rs2"
-    Extract operands
+    e.g R-type instructions are in the format "mnemonic a, b, c"
     '''
  
     match self.Type:
