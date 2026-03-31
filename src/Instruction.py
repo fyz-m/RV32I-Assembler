@@ -199,7 +199,7 @@ class Instruction:
 
           I/S-type should be <= 12-bit 
             - I-type shifts should be <= 5-bit since shifting more than 32 bits is redundant (32-bit register size)
-          B-type shoulbe be <= 13-bit
+          B-type should be <= 13-bit
           U-type should be <= 20-bit 
           J-type should be <= 21-bit
           '''
@@ -244,7 +244,7 @@ class Instruction:
               if immediate in valid_range:
                 return True
 
-          raise ValueError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range}")
+          raise ValueError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
 
   
   
