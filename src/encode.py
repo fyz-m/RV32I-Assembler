@@ -1,14 +1,10 @@
 
-'''
-Encode instruction according to instruction type: R, I, S/B, U/J
-Registers must already be converted to their number (defined by RISC-V ISA)
-input instruction example format:
-  "add 18, 19, 20" 
-
-'''
-
 
 def encode(instruction):
+  '''
+  Takes Instruction object as input (contains field values like opcode and registers)
+  Returns string of field values encoded according to its instruction type 
+  '''
 
   match instruction.Type:
     case "R-type":
@@ -27,20 +23,20 @@ def encode(instruction):
 
 
 
-def encode_R_type(opcode, rd, rs1, rs2, func3, func7):
+def encode_R_type(instruction):
   ...
 
-def encode_I_type(opcode, rd, rs1, func3, imm):
+def encode_I_type(instruction):
   ...
 
-def encode_S_type(opcode, rs1, rs2, func3, imm):
+def encode_S_type(instruction):
   ... 
 
-def encode_B_type(opcode, rs1, rs2, func3, imm):
+def encode_B_type(instruction):
   ... 
 
-def encode_U_type(opcode, rd, imm):
+def encode_U_type(instruction):
   ... 
 
-def encode_J_type(opcode, rd, imm):
+def encode_J_type(instruction):
   ... 
