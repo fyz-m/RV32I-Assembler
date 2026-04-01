@@ -199,8 +199,6 @@ def test_extract_operands(input_inst, expected_operands):
 def test_controlbits(input_inst, expected_op, expected_func3, expected_func7):
     instruction = Instruction(input_inst)
    
-    assert str(instruction.op) == expected_op
-    if expected_func7:
-      assert str(instruction.func3) == expected_func3
-    if expected_func7:
-      assert str(instruction.func7) == expected_func7
+    assert instruction.op == expected_op
+    assert instruction.func3 == expected_func3
+    assert instruction.func7 == expected_func7
