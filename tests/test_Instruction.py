@@ -1,22 +1,7 @@
 from src.Instruction import Instruction, InstructionError
 import pytest
 
-'''@pytest.mark.parametrize("input_inst, expected_mnemonic, expected_type",[
-        ("add s3, s1, s2",  "add", "R-type"),   
-        ("addi s3, s1, 10", "addi", "I-type"),  
-        ("sw s3, 12(s2)", "sw", "S-type"), 
-        ("beq s3, s1, label", "beq", "B-type"),  
-        ("lui s3, 0xABCDEF", "lui", "U-type"),   
-        ("jal ra, label", "jal", "J-type"), 
 
-
-])
-
-def test_mnemonic_type(input_inst, expected_mnemonic, expected_type):
-  instruction = Instruction(input_inst)
-  assert instruction.Mnemonic == expected_mnemonic
-  assert instruction.Type == expected_type
-'''
 
 
 @pytest.mark.parametrize("input_inst", [
@@ -194,3 +179,26 @@ def test_extract_operands(input_inst, expected_operands):
   if expected_operands['imm']:
         assert instruction.imm == expected_operands['imm']
   
+
+@pytest.mark.parametrize("input_mnemonic, expected_op, expected_func3, expected_func7",[
+        ("add", "0110011", "000", "0000000"),
+        ("sub", "0110011", "000", "0100000"),
+        ("srl", "0110011", "101", "0000000"),
+        ("sra", "0110011", "101", "0100000"),
+        ("sw", "0100011", "010", None),
+        ("xori", "0010011", "100", None),
+        ("slli", "0010011", "001", "0000000"),
+        ("srai", "0010011", "101", "0100000"),
+        ("bltu", "1100011", "110", None),
+        ("jal", "1101111", None , None),       
+])
+
+def test_controlbits(input_mnemonic, expected_op, expected_func3, expected_func7):
+    instruction = Instruction("add s0, s1, s2")
+    instruction.Mnemonic = input_mnemonic
+
+    assert str(instruction.op) == expected_op
+    if expected_func7:
+      assert str(instruction.func3) == expected_func3
+    if expected_func7:
+      assert str(instruction.func7) == expected_func7
