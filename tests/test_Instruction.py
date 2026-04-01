@@ -164,6 +164,14 @@ def test_check_immediate_J_type():
         ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
         ("jal ra, 0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
 
+        ("add  S3 ,s1,    s2", {"rs1":9, "rs2":18, "rd":19, "imm":None} ),   
+        ("addi     s3, s1   , 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ),  
+        ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12} ), 
+        ("sw   t0   ,    10(x1)", {"rs1":1, "rs2":5, "rd":None, "imm":10} ),
+        ("beq   s3 , s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":47} ),  
+        ("lui s3,0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
+        ("jal ra,0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
+
 
 ])
 
@@ -179,7 +187,25 @@ def test_extract_operands(input_inst, expected_operands):
   if expected_operands['imm']:
         assert instruction.imm == expected_operands['imm']
   
+@pytest.mark.parametrize("input_inst",[
+        ("adds1, s2, s3"),
+        ("beqx31,a0, 0"),
+        ("sw t0, 10 ( x1 )"),
+        ("sw t0, 1( x1 )"),
+        ("sw t0, 12 (x5)"),
+        ("add t0, s1"),
+        ("subi t1, 40"),
+        ("xor s3 s1 t3"),
+        ("jal 0xABC"),
+        ("lui s13 400"),
 
+])
+
+def test_extract_operands_Error(input_inst):
+
+    with pytest.raises(InstructionError):
+        instruction = Instruction(input_inst)
+    
 @pytest.mark.parametrize("input_inst, expected_op, expected_func3, expected_func7",[
     
         ("add x1, x1, x1", "0110011", "000", "0000000"),
