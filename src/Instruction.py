@@ -82,7 +82,7 @@ class Instruction:
   
   @op.setter
   def op(self, opcode):
-    if opcode == INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]:
+    if opcode:
       # Convert opcode to 7-bit binary
       self._op = format(opcode, '07b')
 
@@ -92,7 +92,10 @@ class Instruction:
   
   @func3.setter
   def func3(self, func3):
-    if func3 == INSTRUCTION_SET[self.Type][self.Mnemonic]["func3"]:
+
+    if func3 is None:
+      self._func3 = None 
+    else:
       # Convert func3 to 3-bit binary 
       self._func3 = format(func3, '03b')
 
@@ -102,8 +105,11 @@ class Instruction:
   
   @func7.setter
   def func7(self, func7):
-    if func7 == INSTRUCTION_SET[self.Type][self.Mnemonic]["func7"]:
-      # Convert func7 to 7-bit binary
+
+    if func7 is None:
+      self._func7 = None
+    else:
+      # Convert func7 to 7-bit binary 
       self._func7 = format(func7, '07b')
 
   @property
