@@ -4,13 +4,38 @@ import pytest
 
 
 
-@pytest.mark.parametrize("input_inst", [
-        ("add t0, zero, s1"),
+@pytest.mark.parametrize("input_inst, expected_mnemonic", [
+        ("add t0, zero, s1", "add"),
+        ("ADD t0, zero, s1", "add"),
+        (" ADD   t0, zero, s1", "add"),
+        ("LUI   t0, 0", "lui"),
+        (" SlTu s3, s4, t1", "sltu"),
+        (" Sw x0, 5(x1)", "sw"),
+        
   
 ])
 
-def test_checkreg(input_inst):
-  instruction = Instruction(input_inst)
+def test_mnemonic_setter(input_inst, expected_mnemonic):
+    instruction = Instruction(input_inst)
+    assert instruction.Mnemonic == expected_mnemonic
+
+@pytest.mark.parametrize("input_inst", [
+        ("fmadd t0, zero, s1"),
+        ("addinstruction t0, zero, s1"),
+        ("addition   t0, zero, s1"),
+        ("ld t0, 0"),
+        ("ad d SlTu s3, s4, t1"),
+        ("mnemonic s1, s2, s3"),
+        
+])
+
+def test_mnemonic_setter_error(input_inst):
+    
+    with pytest.raises(InstructionError):
+      instruction = Instruction(input_inst)
+        
+def test_checkreg():
+  instruction = Instruction("add t0, zero, s1")
 
   assert instruction.check_reg("s0") == True
   assert instruction.check_reg("ra") == True
@@ -198,6 +223,8 @@ def test_extract_operands(input_inst, expected_operands):
         ("xor s3 s1 t3"),
         ("jal 0xABC"),
         ("lui s13 400"),
+        ("add addi x1, x3, x4"),
+        ("beq   xor, x3, add")
 
 ])
 
