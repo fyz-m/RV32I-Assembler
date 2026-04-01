@@ -2,7 +2,18 @@ from src.Instruction import Instruction, InstructionError
 import pytest
 
 
+@pytest.mark.parametrize("input_inst", [
+        ("add123"),
+        ("xors1s2s3"),
+        ("instruction"),
+        (" "),
+        ("#Comment"),
+])
 
+def test_instruction_setter_error(input_inst):
+    
+    with pytest.raises(InstructionError):
+      instruction = Instruction(input_inst)
 
 @pytest.mark.parametrize("input_inst, expected_mnemonic", [
         ("add t0, zero, s1", "add"),
