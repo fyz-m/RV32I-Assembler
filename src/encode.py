@@ -5,9 +5,7 @@ def encode(instruction):
   Takes Instruction object as input (contains field values like opcode and registers)
   Returns string of field values encoded according to its instruction type 
   '''
-  fields = [
-    instruction.op, instruction.rd, instruction.rs1, instruction.rs2, instruction.imm, instruction.func3, instruction.func7
-]
+  
   match instruction.Type:
     case "R-type":
       encode_R_type(fields)
@@ -41,10 +39,16 @@ def encode(instruction):
                 1111_0110
 '''
 
+def sign_extend(n, bits):
+    # Create a mask e.g. for 8 bits, 0b11111111
+    mask = (1 << bits) - 1
+    # Bitwise AND 
+    return n & mask
+
 def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
   '''
   R-type instruction are encoded as the following:
-  
+
   bit[6:0] = opcode
   bit[11:7] = destination register (rd)
   bit[14:12] = function field 3
@@ -64,8 +68,38 @@ def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
 
 
 
-def encode_I_type():
-  ...
+def encode_I_type(op, rd, rs1, funct3, imm):
+  '''
+  I-type instruction are encoded as the following:
+  
+  bit[6:0] = opcode
+  bit[11:7] = destination register (rd)
+  bit[14:12] = function field 3
+  bit[19:15] = source register 1 (rs1)
+  bit[31:20] = Immediate
+
+  '''
+  
+  # Sign extend immediate to 12 bits
+  imm = sign_extend(imm, 12)
+
+
+  # If instruction is srai, imm[10] should be set
+  if op == 19 and funct3 == 5:
+    imm = imm | 1 << 10
+  
+
+  rd = rd << 7  
+  funct3 = funct3 << 12
+  rs1 = rs1 << 15
+  imm = imm << 20
+  
+
+
+  return op | rd | funct3 | rs1 | imm
+
+
+
 
 def encode_S_type():
   ... 
@@ -78,3 +112,7 @@ def encode_U_type():
 
 def encode_J_type():
   ... 
+
+
+  
+
