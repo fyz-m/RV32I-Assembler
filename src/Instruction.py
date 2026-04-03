@@ -149,7 +149,7 @@ class Instruction:
       case "R-type" | "I-type" | "B-type":
         
         # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *([a-z0-9]+)$", self.Instruction):
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
           if self.Type == "R-type":
             #R-type : (mne) rd, rs1, rs2
             self.rd, self.rs1, self.rs2 = operands.groups()
@@ -165,7 +165,7 @@ class Instruction:
       case "S-type":
 
         # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
-        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
           #S-type : (mne) rs2, imm(rs1)   imm = offset
           self.rs2, self.imm, self.rs1 = operands.groups()
           return True
@@ -173,7 +173,7 @@ class Instruction:
       case "U-type" | "J-type":
 
         # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+)$", self.Instruction):
+        if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
           #U/J-type : (mne) rd, label
           self.rd, self.imm = operands.groups()
           return True
