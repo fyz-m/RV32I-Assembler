@@ -194,11 +194,16 @@ def test_check_immediate_J_type():
 
 @pytest.mark.parametrize("input_inst, expected_operands",[
         ("add s3, s1, s2", {"rs1":9, "rs2":18, "rd":19, "imm":None} ),   
-        ("addi s3, s1, 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ),  
+        ("addi s3, s1, 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ), 
+        ("addi s3, s1, -15", {"rs1":9, "rs2":None, "rd":19, "imm":-15} ),
         ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12} ), 
+        ("sw s3, -80(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":-80} ),
         ("beq s3, s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":47} ),  
-        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
-        ("jal ra, 0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
+        ("beq s3, s1, -47", {"rs1":19, "rs2":9, "rd":None, "imm":-47} ), 
+        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),
+        ("lui s3, -400", {"rs1":None, "rs2":None, "rd":19, "imm":-400} ),   
+        ("jal ra, 0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ),
+        ("jal ra, -80", {"rs1":None, "rs2":None, "rd":1, "imm":-80} ), 
 
         ("add  S3 ,s1,    s2", {"rs1":9, "rs2":18, "rd":19, "imm":None} ),   
         ("addi     s3, s1   , 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ),  
