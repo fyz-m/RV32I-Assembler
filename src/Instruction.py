@@ -146,21 +146,36 @@ class Instruction:
  
     match self.Type:
 
-      case "R-type" | "I-type" | "B-type":
+      case "R-type" | "B-type":
         
         # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
         if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
+
           if self.Type == "R-type":
             #R-type : (mne) rd, rs1, rs2
-            self.rd, self.rs1, self.rs2 = operands.groups()
-          if self.Type == "I-type":
-            #I-type : (mne) rd, rs1, imm
-            self.rd, self.rs1, self.imm = operands.groups()
+            self.rd, self.rs1, self.rs2 = operands.groups()        
+            
           if self.Type == "B-type":
             #B-type : (mne) rs1, rs2, imm   imm = branch offset
             self.rs1, self.rs2, self.imm = operands.groups()
 
           return True
+        
+      case "I-type":
+
+        load_instructions = ["lw", "lb", "lh"]
+        # Load instructions are in the same format as S-type instructions
+        if self.Mnemonic in load_instructions:
+
+          if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
+            # Load I-type : (mne) rd, imm(rs1)
+            self.rd, self.imm, self.rs1,  = operands.groups()
+            return True
+        
+        elif operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
+            #I-type : (mne) rd, rs1, imm
+            self.rd, self.rs1, self.imm = operands.groups()
+            return True
         
       case "S-type":
 
