@@ -1,5 +1,6 @@
 import src.encode
 import pytest
+from src.Instruction import Instruction
 
 
 def test_encode_R_type():
@@ -45,3 +46,26 @@ def test_encode_U_type():
 def test_encode_J_type():
   # jal x1, 0xA67F8
   assert src.encode.encode_J_type(op=111, rd=1, imm=0xA67F8) == 0x7F8A60EF
+
+@pytest.mark.parametrize("input_inst, expected_encoding", [
+  ("add s2, s3, s4",  0x01498933),
+  ("addi x5, x6, 10", 0x00A30293),
+  ("add x10, x11, x12", 0x00C58533),
+  ("lui x15, 0xABCDE", 0xABCDE7B7),
+  ("ori x1, x2, -1", 0xFFF16093),
+  ("sub x7, x8, x9", 0x409403B3),
+  ("slli x3, x4, 5", 0x00521193),
+  ("lw x20, 64(x21)", 0x040AACE3),
+  ("and x5, x6, x7", 0x007372B3),
+  ("xori x30, x31, 255", 0x0FFFCF13),
+  ("slt x1, x2, x3", 0x003120B3),
+  ("bge x3, x4, 1024", 0x4041D063),
+  ("bltu x6, x7, 8", 0x00736463),
+  ("bgeu x15, x16, -100", 0xF907F263),
+
+])
+
+def test_encode(input_inst, expected_encoding):
+  instruction = Instruction(input_inst)
+
+  assert src.encode.encode(instruction) == expected_encoding
