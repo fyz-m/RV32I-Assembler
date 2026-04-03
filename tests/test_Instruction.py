@@ -213,6 +213,10 @@ def test_check_immediate_J_type():
         ("lui s3,0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
         ("jal ra,0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
 
+        ("lw x20, 64(x21)", {"rs1":21, "rs2":None, "rd":20, "imm":64} ),
+        ("lh x8, -800(x14)", {"rs1":14, "rs2":None, "rd":8, "imm":-800} ),
+        ("lb x1, 4(x1)", {"rs1":1, "rs2":None, "rd":1, "imm":4} ),
+
 
 ])
 
