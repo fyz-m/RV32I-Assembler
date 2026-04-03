@@ -38,12 +38,9 @@ def encode(instruction):
                 ---------
                 1111_0110
 '''
-
-def sign_extend(n, bits):
-    # Create a mask e.g. for 8 bits, 0b11111111
-    mask = (1 << bits) - 1
-    # Bitwise AND 
-    return n & mask
+    
+    
+    
 
 def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
   '''
@@ -81,7 +78,7 @@ def encode_I_type(op, rd, rs1, funct3, imm):
   '''
   
   # Sign extend immediate to 12 bits
-  imm = sign_extend(imm, 12)
+  imm = imm & 0xFFF
 
 
   # If instruction is srai, imm[10] should be set
@@ -95,14 +92,30 @@ def encode_I_type(op, rd, rs1, funct3, imm):
   imm = imm << 20
   
 
-
   return op | rd | funct3 | rs1 | imm
 
 
 
 
-def encode_S_type():
-  ... 
+def encode_S_type(op, rs1, rs2, funct3, imm):
+  '''
+  '''
+  # Sign extend immediate to 12 bits
+  imm = imm & 0xFFF
+
+  # Get imm[4:0]
+  imm_4_0 = imm & 0x01F  # mask = 0000_0001_1111
+  
+  #Get imm[11:5]
+  imm_11_5 = imm >> 5 
+  
+  funct3 = funct3 << 12
+  rs1 = rs1 << 15
+  rs2 = rs2 << 20
+  imm_4_0 = imm_4_0 << 7
+  imm_11_5 = imm_11_5 << 25
+
+  return op | rs1 | rs2 | funct3 | imm_11_5 | imm_4_0
 
 def encode_B_type():
   ... 
