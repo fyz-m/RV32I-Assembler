@@ -61,7 +61,7 @@ def test_encode_J_type():
   ("slt x1, x2, x3", 0x003120B3),
   ("bge x3, x4, 1024", 0x4041D063),
   ("bltu x6, x7, 8", 0x00736463),
-  ("bgeu x15, x16, -100", 0xF907F263),
+  ("bgeu x15, x16, -100", 0xF907FEE3),
 
 ])
 
