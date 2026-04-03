@@ -152,8 +152,22 @@ def encode_B_type(op, rs1, rs2, funct3, imm):
 
   return op | rs1 | rs2 | funct3 | imm_11 | imm_4_1 | imm_10_5 | imm_12
 
-def encode_U_type():
-  ... 
+def encode_U_type(op, rd, imm):
+  '''
+  Encodes U-type instruction into a 32-bit integer
+
+  Format:
+  | imm[31:12] |   rd   |   op  |
+  |   12-bit   |  5-bit | 7-bit |
+
+  '''
+  # Extend immediate to 20-bit
+  imm = imm & 0xFFFFF
+
+  rd = rd << 7
+  imm = imm << 12
+
+  return op | rd | imm
 
 def encode_J_type():
   ... 
