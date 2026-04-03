@@ -16,9 +16,10 @@ class Instruction:
     self.extract_operands()
 
     self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
-    self.func3 = INSTRUCTION_SET[self.Type][self.Mnemonic]["func3"]
-    self.func7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["func7"]
+    self.funct3 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct3"]
+    self.funct7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct7"]
 
+    self.Fields = {"op": self.op, "rs1": self.rs1, "rs2": self.rs2, "rd": self.rd, "funct3": self.funct3, "funct7": self.funct7, "imm":self.imm}
 
     
     
@@ -87,30 +88,30 @@ class Instruction:
       self._op = format(opcode, '07b')
 
   @property
-  def func3(self):
-    return self._func3
+  def funct3(self):
+    return self._funct3
   
-  @func3.setter
-  def func3(self, func3):
+  @funct3.setter
+  def funct3(self, funct3):
 
-    if func3 is None:
-      self._func3 = None 
+    if funct3 is None:
+      self._funct3 = None 
     else:
-      # Convert func3 to 3-bit binary 
-      self._func3 = format(func3, '03b')
+      # Convert funct3 to 3-bit binary 
+      self._funct3 = format(funct3, '03b')
 
   @property
-  def func7(self):
-    return self._func7
+  def funct7(self):
+    return self._funct7
   
-  @func7.setter
-  def func7(self, func7):
+  @funct7.setter
+  def funct7(self, funct7):
 
-    if func7 is None:
-      self._func7 = None
+    if funct7 is None:
+      self._funct7 = None
     else:
-      # Convert func7 to 7-bit binary 
-      self._func7 = format(func7, '07b')
+      # Convert funct7 to 7-bit binary 
+      self._funct7 = format(funct7, '07b')
 
   @property
   def rs1(self):
