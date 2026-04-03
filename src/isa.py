@@ -1,4 +1,4 @@
-# Contains the RISC-V registers (register file), supported instructions and their control bits (opcode, func3, func7)
+# Contains the RISC-V registers (register file), supported instructions and their control bits (opcode, funct3, funct7)
 # Used in the Instruction class for:
 # - Register and mnemonic validation 
 # - Looking up field values
@@ -9,68 +9,68 @@ INSTRUCTION_SET = {
 
   "R-type": {
 
-    "add": { "op": 51, "func3": 0, "func7": 0},  
-    "sub": { "op": 51, "func3": 0, "func7": 32},
-    "sll": { "op": 51, "func3": 1, "func7": 0},
-    "slt": { "op": 51, "func3": 2, "func7": 0},
-    "sltu": { "op": 51, "func3": 3, "func7": 0},
-    "xor": { "op": 51, "func3": 4, "func7": 0},
-    "srl": { "op": 51, "func3": 5, "func7": 0},
-    "sra": { "op": 51, "func3": 5, "func7": 32},
-    "or": { "op": 51, "func3": 6, "func7": 0},
-    "and": { "op": 51, "func3": 7, "func7": 0}
+    "add": { "op": 51, "funct3": 0, "funct7": 0},  
+    "sub": { "op": 51, "funct3": 0, "funct7": 32},
+    "sll": { "op": 51, "funct3": 1, "funct7": 0},
+    "slt": { "op": 51, "funct3": 2, "funct7": 0},
+    "sltu": { "op": 51, "funct3": 3, "funct7": 0},
+    "xor": { "op": 51, "funct3": 4, "funct7": 0},
+    "srl": { "op": 51, "funct3": 5, "funct7": 0},
+    "sra": { "op": 51, "funct3": 5, "funct7": 32},
+    "or": { "op": 51, "funct3": 6, "funct7": 0},
+    "and": { "op": 51, "funct3": 7, "funct7": 0}
 
   },
 
   "I-type": {
 
-    "lb": { "op": 3, "func3": 0, "func7": None },
-    "lh": { "op": 3, "func3": 1, "func7": None },
-    "lw": { "op": 3, "func3": 2, "func7": None },
-    "lbu": { "op": 3, "func3": 4, "func7": None },
-    "lhu": { "op": 3, "func3": 5, "func7": None },
-    "addi": { "op": 19, "func3": 0, "func7": None},
-    "slli": { "op": 19, "func3": 1, "func7": 0 },
-    "slti": { "op": 19, "func3": 2, "func7": None },
-    "sltiu": { "op": 19, "func3": 3, "func7": None },
-    "xori": { "op": 19, "func3": 4, "func7": None },
-    "srli": { "op": 19, "func3": 5, "func7": 0 },
-    "srai": { "op": 19, "func3": 5, "func7": 32 },
-    "ori": { "op": 19, "func3": 6, "func7": None},
-    "andi": { "op": 19, "func3": 7, "func7": None},
-    "jalr": { "op": 103, "func3": 0, "func7": None}
+    "lb": { "op": 3, "funct3": 0, "funct7": None },
+    "lh": { "op": 3, "funct3": 1, "funct7": None },
+    "lw": { "op": 3, "funct3": 2, "funct7": None },
+    "lbu": { "op": 3, "funct3": 4, "funct7": None },
+    "lhu": { "op": 3, "funct3": 5, "funct7": None },
+    "addi": { "op": 19, "funct3": 0, "funct7": None},
+    "slli": { "op": 19, "funct3": 1, "funct7": 0 },
+    "slti": { "op": 19, "funct3": 2, "funct7": None },
+    "sltiu": { "op": 19, "funct3": 3, "funct7": None },
+    "xori": { "op": 19, "funct3": 4, "funct7": None },
+    "srli": { "op": 19, "funct3": 5, "funct7": 0 },
+    "srai": { "op": 19, "funct3": 5, "funct7": 32 },
+    "ori": { "op": 19, "funct3": 6, "funct7": None},
+    "andi": { "op": 19, "funct3": 7, "funct7": None},
+    "jalr": { "op": 103, "funct3": 0, "funct7": None}
 
   },
 
   "S-type": {
 
-    "sb": { "op": 35, "func3": 0, "func7": None},
-    "sh": { "op": 35, "func3": 1, "func7": None},
-    "sw":{ "op": 35, "func3": 2, "func7": None}
+    "sb": { "op": 35, "funct3": 0, "funct7": None},
+    "sh": { "op": 35, "funct3": 1, "funct7": None},
+    "sw":{ "op": 35, "funct3": 2, "funct7": None}
 
   },
 
   "B-type": {
 
-    "beq":{ "op": 99, "func3": 0, "func7": None},
-    "bne": { "op": 99, "func3": 1, "func7": None},
-    "blt": { "op": 99, "func3": 4, "func7": None},
-    "bge": { "op": 99, "func3": 5, "func7": None},
-    "bltu": { "op": 99, "func3": 6, "func7": None},
-    "bgeu": { "op": 99, "func3": 7, "func7": None}
+    "beq":{ "op": 99, "funct3": 0, "funct7": None},
+    "bne": { "op": 99, "funct3": 1, "funct7": None},
+    "blt": { "op": 99, "funct3": 4, "funct7": None},
+    "bge": { "op": 99, "funct3": 5, "funct7": None},
+    "bltu": { "op": 99, "funct3": 6, "funct7": None},
+    "bgeu": { "op": 99, "funct3": 7, "funct7": None}
 
   },
 
   "U-type": {
 
-   "auipc": { "op": 23, "func3": None, "func7": None},
-   "lui": { "op": 55, "func3": None, "func7": None},
+   "auipc": { "op": 23, "funct3": None, "funct7": None},
+   "lui": { "op": 55, "funct3": None, "funct7": None},
 
   },
 
   "J-type": {
 
-    "jal":{ "op": 111, "func3": None , "func7": None},
+    "jal":{ "op": 111, "funct3": None , "funct7": None},
 
   }
 }
