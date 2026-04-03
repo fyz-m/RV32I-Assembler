@@ -169,8 +169,34 @@ def encode_U_type(op, rd, imm):
 
   return op | rd | imm
 
-def encode_J_type():
-  ... 
+def encode_J_type(op, rd, imm):
+  '''
+  Encodes J-type instruction into a 32-bit integer
+
+  Format:
+  | imm[20] | imm[10:1] | imm[11] | imm[19:12] |   rd   |   op  |
+  |                   12-bit                   |  5-bit | 7-bit |
+
+  '''
+  # Extend immediate to 20-bit
+  imm = imm & 0xFFFFF
+
+  # Extract imm[10:1]
+  imm_10_1 = (imm >>1 ) & 0x003FF  # 0000_0000_0011_1111_1111
+  # Extract imm[11]
+  imm_11 = (imm >> 11) & 0x01  #0000_0001
+  # Extract imm[19:12]
+  imm_19_12 = (imm >> 12) & 0x1FF #0001_1111_1111
+  # Extract imm[20]
+  imm_20 = imm >> 20
+
+  rd = rd << 7
+  imm_19_12 = imm_19_12 << 12
+  imm_11 = imm_11 << 20
+  imm_10_1 = imm_10_1 << 21
+  imm_20 = imm_20 << 31
+
+  return op | rd | imm_19_12 | imm_11 | imm_10_1 | imm_20
 
 
   
