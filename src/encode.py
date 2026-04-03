@@ -1,24 +1,24 @@
 
 
-def encode(instruction):
+def encode(inst):
   '''
   Takes Instruction object as input (contains field values like opcode and registers)
-  Returns string of field values encoded according to its instruction type 
+  Returns encoded instruction as 32-bit integer  
   '''
-  
-  match instruction.Type:
+
+  match inst.Type:
     case "R-type":
-      encode_R_type(fields)
+      return encode_R_type(inst.op, inst.rd, inst.rs1, inst.rs2, inst.funct3, inst.funct7)
     case "I-type":
-      encode_I_type(fields)
+      return encode_I_type(inst.op, inst.rd, inst.rs1, inst.funct3, inst.imm)
     case "S-type":
-      encode_S_type(fields)
+      return encode_S_type(inst.op, inst.rs1, inst.rs2, inst.funct3, inst.imm)
     case "B-type":
-      encode_B_type(fields)
+      return encode_B_type(inst.op, inst.rs1, inst.rs2, inst.funct3, inst.imm)
     case "U-type":
-      encode_U_type(fields)
+      return encode_U_type(inst.op, inst.rd, inst.imm)
     case "B-type":
-      encode_B_type(fields)
+      return encode_B_type(inst.op, inst.rd, inst.imm)
 
 
 '''
@@ -39,8 +39,9 @@ def encode(instruction):
                 1111_0110
 '''
     
-    
-    
+'''
+  All encoding functions take fields input as integers
+'''   
 
 def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
   '''
@@ -62,7 +63,6 @@ def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
   funct7 = funct7 << 25
   
   return op | rd | funct3 | rs1 | rs2 | funct7
-
 
 
 def encode_I_type(op, rd, rs1, funct3, imm):
@@ -95,8 +95,6 @@ def encode_I_type(op, rd, rs1, funct3, imm):
   return op | rd | funct3 | rs1 | imm
 
 
-
-
 def encode_S_type(op, rs1, rs2, funct3, imm):
   '''
   '''
@@ -116,6 +114,7 @@ def encode_S_type(op, rs1, rs2, funct3, imm):
   imm_11_5 = imm_11_5 << 25
 
   return op | rs1 | rs2 | funct3 | imm_11_5 | imm_4_0
+
 
 def encode_B_type(op, rs1, rs2, funct3, imm):
   '''
@@ -152,6 +151,7 @@ def encode_B_type(op, rs1, rs2, funct3, imm):
 
   return op | rs1 | rs2 | funct3 | imm_11 | imm_4_1 | imm_10_5 | imm_12
 
+
 def encode_U_type(op, rd, imm):
   '''
   Encodes U-type instruction into a 32-bit integer
@@ -168,6 +168,7 @@ def encode_U_type(op, rd, imm):
   imm = imm << 12
 
   return op | rd | imm
+
 
 def encode_J_type(op, rd, imm):
   '''
