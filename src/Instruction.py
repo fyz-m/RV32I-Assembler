@@ -13,6 +13,12 @@ class Instruction:
     self.Instruction = instruction
     self.Mnemonic = None
     self.Type = None
+    self._rd = None
+    self._rs1 = None
+    self._rs2 = None
+    self.funct3 = None
+    self.funct7 = None
+    self._imm = None
     self.extract_operands()
 
     self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
@@ -76,43 +82,7 @@ class Instruction:
     for type in INSTRUCTION_SET:
       if self.Mnemonic in INSTRUCTION_SET[type]:
         self._Type = type
-    
-  @property
-  def op(self):
-    return self._op
-  
-  @op.setter
-  def op(self, opcode):
-    if opcode:
-      # Convert opcode to 7-bit binary
-      self._op = format(opcode, '07b')
-
-  @property
-  def funct3(self):
-    return self._funct3
-  
-  @funct3.setter
-  def funct3(self, funct3):
-
-    if funct3 is None:
-      self._funct3 = None 
-    else:
-      # Convert funct3 to 3-bit binary 
-      self._funct3 = format(funct3, '03b')
-
-  @property
-  def funct7(self):
-    return self._funct7
-  
-  @funct7.setter
-  def funct7(self, funct7):
-
-    if funct7 is None:
-      self._funct7 = None
-    else:
-      # Convert funct7 to 7-bit binary 
-      self._funct7 = format(funct7, '07b')
-
+ 
   @property
   def rs1(self):
     return self._rs1
@@ -123,6 +93,7 @@ class Instruction:
     register.lower().strip()
     if self.check_reg(register):
       self._rs1 = REGISTER_FILE[f"{register}"]
+    
 
   @property
   def rs2(self):
