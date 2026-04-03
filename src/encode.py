@@ -103,10 +103,10 @@ def encode_S_type(op, rs1, rs2, funct3, imm):
   # Sign extend immediate to 12 bits
   imm = imm & 0xFFF
 
-  # Get imm[4:0]
+  # Extract imm[4:0]
   imm_4_0 = imm & 0x01F  # mask = 0000_0001_1111
   
-  #Get imm[11:5]
+  # Extract imm[11:5]
   imm_11_5 = imm >> 5 
   
   funct3 = funct3 << 12
@@ -117,8 +117,40 @@ def encode_S_type(op, rs1, rs2, funct3, imm):
 
   return op | rs1 | rs2 | funct3 | imm_11_5 | imm_4_0
 
-def encode_B_type():
-  ... 
+def encode_B_type(op, rs1, rs2, funct3, imm):
+  '''
+  
+  '''
+  # Sign extend immediate to 13 bits
+  # B-type instructions have a 13-bit immediate since branch offset is always a multiple of 4, instruction are 4-bytes apart.
+  # Therefore imm[1:0] are always 0 
+  # imm[0] is discarded to fit the immediate in the 12-bit field
+  # imm[1] can also be discarded but is still encoded for compatibility with compressed RISC-V instructions
+  imm = imm & 0x1FFF
+ 
+  # Extract imm[4:1] 
+  imm_4_1 = (imm >> 1) & 0x01E #0000_0001_1110
+  
+  # Extract imm[10:5]
+  imm_10_5 = (imm >> 5) & 0b00_1111_11
+
+  # Extract imm[11]
+  imm_11 = (imm >> 11) & 0b01
+  
+  # Extract imm[12]
+  imm_12 = imm >> 12
+
+  # Shift fields to their respectiv location in the 32-bit instruction
+  funct3 = funct3 << 12
+  rs1 = rs1 << 15
+  rs2 = rs2 << 20
+
+  imm_11 = imm_11 << 7
+  imm_4_1 = imm_4_1 << 8
+  imm_10_5 = imm_10_5 << 25
+  imm_12 = imm_12 << 31
+
+  return op | rs1 | rs2 | funct3 | imm_11 | imm_4_1 | imm_10_5 | imm_12
 
 def encode_U_type():
   ... 
