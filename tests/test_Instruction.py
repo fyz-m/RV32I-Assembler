@@ -244,25 +244,25 @@ def test_extract_operands_Error(input_inst):
     with pytest.raises(InstructionError):
         instruction = Instruction(input_inst)
     
-@pytest.mark.parametrize("input_inst, expected_op, expected_func3, expected_func7",[
+@pytest.mark.parametrize("input_inst, expected_op, expected_funct3, expected_funct7",[
     
-        ("add x1, x1, x1", "0110011", "000", "0000000"),
-        ("sub x1, x1, x1", "0110011", "000", "0100000"),
-        ("srl x1, x1, x1", "0110011", "101", "0000000"),
-        ("sra x1, x1, x1", "0110011", "101", "0100000"),
+        ("add x1, x1, x1", 51, 0, 0),
+        ("sub x1, x1, x1", 51, 0, 32),
+        ("srl x1, x1, x1", 51, 5, 0),
+        ("sra x1, x1, x1", 51, 5, 32),
 
-        ("sw x1, 0(x1)", "0100011", "010", None),
-        ("xori x1, x1, 0", "0010011", "100", None),
-        ("slli x1, x1, 0", "0010011", "001", "0000000"),
-        ("srai x1, x1, 0", "0010011", "101", "0100000"),
+        ("sw x1, 0(x1)", 35, 2, None),
+        ("xori x1, x1, 0", 19, 4, None),
+        ("slli x1, x1, 0", 19, 1, 0),
+        ("srai x1, x1, 0", 19, 5, 32),
 
-        ("bltu x1, x1, 20", "1100011", "110", None),
-        ("jal ra, 20", "1101111", None , None),       
+        ("bltu x1, x1, 20", 99, 6, None),
+        ("jal ra, 20", 111, None , None),       
 ])
 
-def test_controlbits(input_inst, expected_op, expected_func3, expected_func7):
+def test_controlbits(input_inst, expected_op, expected_funct3, expected_funct7):
     instruction = Instruction(input_inst)
    
     assert instruction.op == expected_op
-    assert instruction.func3 == expected_func3
-    assert instruction.func7 == expected_func7
+    assert instruction.funct3 == expected_funct3
+    assert instruction.funct7 == expected_funct7
