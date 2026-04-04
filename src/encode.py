@@ -7,7 +7,7 @@ def encode(inst):
     Returns encoded instruction as 32-bit integer
     """
 
-    match inst.Type:
+    match inst.type:
         case "R-type":
             return encode_R_type(inst.op, inst.rd, inst.rs1, inst.rs2, inst.funct3, inst.funct7)
         case "I-type":
@@ -49,7 +49,7 @@ def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
     return op | rd | funct3 | rs1 | rs2 | funct7
 
 
-def encode_I_type(op, rd, rs1, funct3, imm, funct7=0):
+def encode_I_type(op, rd, rs1, funct3, imm, funct7=None):
     """
     I-type instruction are encoded as the following:
 
@@ -68,7 +68,7 @@ def encode_I_type(op, rd, rs1, funct3, imm, funct7=0):
     # Shift immediates are 5-bit, upper bits of immediate = funct7 in shift instructions
     # srli and srai share opcode and funct3, so they are differentiated by srai having funct7 = 0b0100000, or imm[10] = 1
     # If instruction is srai, imm[10] should be set
-    if funct7:
+    if funct7 == 32:
         imm = imm | (1 << 10)
 
     rd = rd << 7
