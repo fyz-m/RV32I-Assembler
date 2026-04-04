@@ -11,7 +11,7 @@ def encode(inst):
         case "R-type":
             return encode_R_type(inst.op, inst.rd, inst.rs1, inst.rs2, inst.funct3, inst.funct7)
         case "I-type":
-            return encode_I_type(inst.op, inst.rd, inst.rs1, inst.funct3, inst.imm)
+            return encode_I_type(inst.op, inst.rd, inst.rs1, inst.funct3, inst.imm, inst.funct7)
         case "S-type":
             return encode_S_type(inst.op, inst.rs1, inst.rs2, inst.funct3, inst.imm)
         case "B-type":
@@ -49,7 +49,7 @@ def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
     return op | rd | funct3 | rs1 | rs2 | funct7
 
 
-def encode_I_type(op, rd, rs1, funct3, imm):
+def encode_I_type(op, rd, rs1, funct3, imm, funct7=0):
     """
     I-type instruction are encoded as the following:
 
@@ -64,9 +64,12 @@ def encode_I_type(op, rd, rs1, funct3, imm):
     # Sign extend immediate to 12 bits
     imm = imm & 0xFFF
 
+    
+    # Shift immediates are 5-bit, upper bits of immediate = funct7 in shift instructions
+    # srli and srai share opcode and funct3, so they are differentiated by srai having funct7 = 0b0100000, or imm[10] = 1
     # If instruction is srai, imm[10] should be set
-    if op == 19 and funct3 == 5:
-        imm = imm | 1 << 10
+    if funct7:
+        imm = imm | (1 << 10)
 
     rd = rd << 7
     funct3 = funct3 << 12
