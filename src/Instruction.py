@@ -89,7 +89,6 @@ class Instruction:
   @rs1.setter
   def rs1(self, register):
     #Validate register
-    register.lower().strip()
     if self.check_reg(register):
       self._rs1 = REGISTER_FILE[f"{register}"]
     
@@ -101,7 +100,6 @@ class Instruction:
   @rs2.setter
   def rs2(self, register):
     #Validate register
-    register.lower().strip()
     if self.check_reg(register):
       self._rs2 = REGISTER_FILE[f"{register}"]
 
@@ -112,7 +110,6 @@ class Instruction:
   @rd.setter
   def rd(self, register):
     #Validate register
-    register.lower().strip()
     if self.check_reg(register):
       self._rd = REGISTER_FILE[f"{register}"]
 
