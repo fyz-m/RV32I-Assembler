@@ -61,13 +61,16 @@ class Instruction:
     '''
     for type in INSTRUCTION_SET:
       if self.Mnemonic in INSTRUCTION_SET[type]:
-        return type
+        inst_type = type
 
     # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
     if self.Mnemonic in ["lw", "lb", "lh"]: 
       self.load_type = True
     else:
       self.load_type = False
+
+    return inst_type
+  
 
   def _initialize_operands(self):
     '''
