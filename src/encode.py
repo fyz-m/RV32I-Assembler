@@ -157,8 +157,8 @@ def encode_J_type(op, rd, imm):
     |                   12-bit                   |  5-bit | 7-bit |
 
     """
-    # Extend immediate to 20-bit
-    imm = imm & 0xFFFFF
+    # Extend immediate to 21-bit
+    imm = imm & 0x1FFFFF
 
     # Extract imm[10:1]
     imm_10_1 = (imm >> 1) & 0x003FF  # 0000_0000_0011_1111_1111
