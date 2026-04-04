@@ -16,20 +16,14 @@ class Instruction:
     self._rd = None
     self._rs1 = None
     self._rs2 = None
-    self.funct3 = None
-    self.funct7 = None
     self._imm = None
     self.extract_operands()
 
     self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
     self.funct3 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct3"]
     self.funct7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct7"]
-
-    self.Fields = {"op": self.op, "rs1": self.rs1, "rs2": self.rs2, "rd": self.rd, "funct3": self.funct3, "funct7": self.funct7, "imm":self.imm}
-
-    
-    
-    
+  
+        
   @property
   def Instruction(self):
       return self._Instruction
@@ -82,6 +76,11 @@ class Instruction:
     for type in INSTRUCTION_SET:
       if self.Mnemonic in INSTRUCTION_SET[type]:
         self._Type = type
+
+    if self.Mnemonic in ["lw", "lb", "lh"]: 
+      self.load_type = True
+    else:
+      self.load_type = False
  
   @property
   def rs1(self):
@@ -163,9 +162,8 @@ class Instruction:
         
       case "I-type":
 
-        load_instructions = ["lw", "lb", "lh"]
         # Load instructions are in the same format as S-type instructions
-        if self.Mnemonic in load_instructions:
+        if self.load_type:
 
           if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
             # Load I-type : (mne) rd, imm(rs1)
@@ -193,21 +191,31 @@ class Instruction:
           self.rd, self.imm = operands.groups()
           return True
         
-    raise InstructionError(f"Invalid format for instruction type '{self.Type}': '{self.Instruction}'\nShould be in format: '{self.Valid_format}'") 
+    raise InstructionError(f"Invalid format for '{self.Type}' instruction: '{self.Instruction}'\n" f"Expected format: '{self.Valid_format()}' ") 
           
      
   def Valid_format(self):
     match self.Type:
       case "R-type":
         return "(mnemonic) rd, rs1, rs2"
+      
       case "I-type":
-        return "(mnemonic) rd, rs1, imm"
+        if self.load_type:
+          return "(mnemonic) rs2, offset(rs1)"
+        else:
+          return "(mnemonic) rd, rs1, immediate"
+      
       case "S-type":
-        return "(mnemonic) rs2, imm(rs1)"
+        return "(mnemonic) rs2, offset(rs1)"
+      
       case "B-type":
         return "(mnemonic) rs1, rs2, label"
-      case "U-type" | "J-type":
-        return "(mnemonic) rd, imm"
+      
+      case "U-type":
+        return "(mnemonic) rd, immediate"
+      
+      case "J-type":
+        return "(mnemonic) rd, label"
 
 
   def check_reg(self, register):
@@ -271,8 +279,6 @@ class Instruction:
 
           raise InstructionError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
 
-  
-  
   
 
         
