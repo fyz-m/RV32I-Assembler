@@ -24,7 +24,9 @@ def test_encode_I_type():
   assert src.encode.encode_I_type(op=19, rd=18, rs1=23, funct3=1, imm=5) == 0x005B9913
   # srai t1, t2, 29  
   assert src.encode.encode_I_type(op=19, rd=6, rs1=7, funct3=5, imm=29) == 0x41D3D313
- 
+  # xori x23, x21, 0xFFF
+  assert src.encode.encode_I_type(op=19, rd=23, rs1=21, funct3=5, imm=0xFFF) == 0xFFFACB93
+
 def test_encode_S_type():
   # sw t2, -6(s3)
   assert src.encode.encode_S_type(op=35, rs1=19, rs2=7, funct3=2, imm=-6) == 0xFE79AD23 
@@ -32,20 +34,28 @@ def test_encode_S_type():
   assert src.encode.encode_S_type(op=35, rs1=5, rs2=20, funct3=1, imm=23) == 0x01429BA3 
   # sb t5, 0x2D(zero)
   assert src.encode.encode_S_type(op=35, rs1=0, rs2=30, funct3=0, imm=45) == 0x03E006A3 
+  # sb t5, 0xFFFF(zero)
+  assert src.encode.encode_S_type(op=35, rs1=0, rs2=30, funct3=0, imm=0xFFFF) == 0xFFE00FA3
 
 def test_encode_B_type():
   # beq s0, t5, 16
   assert src.encode.encode_B_type(op=99, rs1=8, rs2=30, funct3=0, imm=16 ) == 0x01E40863
   # bne s8, s9, -2908
   assert src.encode.encode_B_type(op=99, rs1=24, rs2=25, funct3=1, imm=-2908 ) == 0xCB9C1263
+  # beq s0, t5, 0x1FFF
+  assert src.encode.encode_B_type(op=99, rs1=8, rs2=30, funct3=0, imm=0x1FFF ) == 0xFFE40FE3
 
 def test_encode_U_type():
   # lui s5, 0x8CDEF
   assert src.encode.encode_U_type(op=55, rd=21, imm=0x8CDEF) == 0x8CDEFAB7
+  # auipc x20, 0xFFFFF
+  assert src.encode.encode_U_type(op=23, rd=20, imm=0xFFFFF) == 0xFFFFFA17
 
 def test_encode_J_type():
   # jal x1, 0xA67F8
   assert src.encode.encode_J_type(op=111, rd=1, imm=0xA67F8) == 0x7F8A60EF
+  # jal x1, 0x1FFFFF
+  assert src.encode.encode_J_type(op=111, rd=1, imm=0x1FFFFF) == 0xFFFFF0EF
 
 @pytest.mark.parametrize("input_inst, expected_encoding", [
   ("add s2, s3, s4",  0x01498933),
