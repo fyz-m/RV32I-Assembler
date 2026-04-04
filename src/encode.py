@@ -1,10 +1,15 @@
-# TODO:
-# Clean up code
-# Comments and docstrings
+
 def encode(inst):
+
     """
-    Takes Instruction object as input (contains field values like opcode and registers)
-    Returns encoded instruction as 32-bit integer
+    Dispatch an Instruction object to the correct encoding function
+
+    Args:
+        inst: Instruction object with fields: type, op, rd, rs1, rs2, funct3, funct7, imm
+
+    Returns:
+        32-bit encoded instruction as an integer
+
     """
 
     match inst.type:
@@ -22,42 +27,35 @@ def encode(inst):
             return encode_J_type(inst.op, inst.rd, inst.imm)
 
 
-"""
-  All encoding functions take fields input as integers
-"""
 
 
-def encode_R_type(op, rd, rs1, rs2, funct3, funct7):
+def encode_R_type(op: int, rd: int, rs1: int, rs2: int, funct3: int, funct7: int) -> int:
     """
-    R-type instruction are encoded as the following:
+    Encode R-type instruction into a 32-bit integer
 
-    bit[6:0] = opcode
-    bit[11:7] = destination register (rd)
-    bit[14:12] = function field 3
-    bit[19:15] = source register 1 (rs1)
-    bit[24:20] = source register 2 (rs2)
-    bit[31:25] = function field 7
+    Bit layout:
+    | funct7 |  rs2   |  rs1   | funct3 |   rd   |   op   |
+    |  7-bit |  5-bit |  5-bit |  3-bit |  5-bit |  7-bit |
 
     """
-    # Shift the value to its starting bit postion, pad with zeroes
-    rd = rd << 7  # rd = rd_000_0000
-    funct3 = funct3 << 12
-    rs1 = rs1 << 15
-    rs2 = rs2 << 20
-    funct7 = funct7 << 25
+    return (
+        op
+        | rd << 7 
+        | funct3 << 12
+        | rs1 << 15
+        | rs2 << 20
+        | funct7 << 25
+    )
+   
 
-    return op | rd | funct3 | rs1 | rs2 | funct7
 
-
-def encode_I_type(op, rd, rs1, funct3, imm, funct7=None):
+def encode_I_type(op: int, rd: int, rs1: int, funct3: int, imm: int, funct7=None) -> int:
     """
-    I-type instruction are encoded as the following:
+    Encode an I-type instruction into a 32-bit integer
 
-    bit[6:0] = opcode
-    bit[11:7] = destination register (rd)
-    bit[14:12] = function field 3
-    bit[19:15] = source register 1 (rs1)
-    bit[31:20] = Immediate
+    Bit layout:
+    |  imm[11:0]  |  rs1   | funct3 |   rd   |   op   |
+    |   12-bit    |  5-bit |  3-bit |  5-bit |  7-bit |
 
     """
 
@@ -71,16 +69,25 @@ def encode_I_type(op, rd, rs1, funct3, imm, funct7=None):
     if funct7 == 32:
         imm = imm | (1 << 10)
 
-    rd = rd << 7
-    funct3 = funct3 << 12
-    rs1 = rs1 << 15
-    imm = imm << 20
+    return (
+        op
+        | rd << 7
+        | funct3 << 12
+        | rs1 << 15
+        | imm << 20
+    )
 
-    return op | rd | funct3 | rs1 | imm
 
 
-def encode_S_type(op, rs1, rs2, funct3, imm):
-    """ """
+def encode_S_type(op: int, rs1: int, rs2: int, funct3: int, imm: int) -> int:
+    """
+    Encode an S-type instruction into a 32-bit integer
+
+    Bit layout:
+    | imm[11:5] |  rs2   |  rs1   | funct3 | imm[4:0] |   op   |
+    |   7-bit   |  5-bit |  5-bit |  3-bit |   5-bit  |  7-bit |
+
+    """
     # Sign extend immediate to 12 bits
     imm = imm & 0xFFF
 
@@ -90,17 +97,28 @@ def encode_S_type(op, rs1, rs2, funct3, imm):
     # Extract imm[11:5]
     imm_11_5 = imm >> 5
 
-    funct3 = funct3 << 12
-    rs1 = rs1 << 15
-    rs2 = rs2 << 20
-    imm_4_0 = imm_4_0 << 7
-    imm_11_5 = imm_11_5 << 25
+    return (
+        op
+        | funct3 << 12
+        | imm_4_0 << 7
+        | rs1 << 15
+        | rs2 << 20
+        | imm_11_5 << 25
+    )
+    
 
-    return op | rs1 | rs2 | funct3 | imm_11_5 | imm_4_0
 
+def encode_B_type(op: int, rs1: int, rs2: int, funct3: int, imm: int) -> int:
+    """
+    Encode a B-type instruction into a 32-bit integer
 
-def encode_B_type(op, rs1, rs2, funct3, imm):
-    """ """
+    Bit layout:
+    | imm[12] | imm[10:5] |  rs2   |  rs1   | funct3 | imm[4:1] | imm[11] |   op   |
+    |  1-bit  |   6-bit   |  5-bit |  5-bit |  3-bit |   4-bit  |  1-bit  |  7-bit |
+
+    The immediate encoding is designed to minimize the hardware for extracting and sign extending it
+    RISC-V tries to keep the immediate bits location as consistent as possible across instruction types
+    """
     # Sign extend immediate to 13 bits
     # B-type instructions have a 13-bit immediate since branch offset is always a multiple of 4, instruction are 4-bytes apart.
     # Therefore imm[1:0] are always 0
@@ -120,42 +138,41 @@ def encode_B_type(op, rs1, rs2, funct3, imm):
     # Extract imm[12]
     imm_12 = imm >> 12
 
-    # Shift fields to their respective location in the 32-bit instruction
-    funct3 = funct3 << 12
-    rs1 = rs1 << 15
-    rs2 = rs2 << 20
+    return (
+        op
+        | imm_11 << 7
+        | imm_4_1 << 8
+        | funct3 << 12
+        | rs1 << 15
+        | rs2 << 20
+        | imm_10_5 << 25
+        | imm_12 << 31
+    )
 
-    imm_11 = imm_11 << 7
-    imm_4_1 = imm_4_1 << 8
-    imm_10_5 = imm_10_5 << 25
-    imm_12 = imm_12 << 31
-
-    return op | rs1 | rs2 | funct3 | imm_11 | imm_4_1 | imm_10_5 | imm_12
 
 
-def encode_U_type(op, rd, imm):
+def encode_U_type(op: int, rd: int, imm: int) -> int:
     """
-    Encodes U-type instruction into a 32-bit integer
+    Encode a U-type instruction into a 32-bit integer
 
-    Format:
-    | imm[31:12] |   rd   |   op  |
-    |   12-bit   |  5-bit | 7-bit |
+    Bit layout:
+    | imm[31:12] |   rd   |   op   |
+    |   20-bit   |  5-bit |  7-bit |
 
     """
     # Extend immediate to 20-bit
     imm = imm & 0xFFFFF
 
-    rd = rd << 7
-    imm = imm << 12
+    return (imm << 12) | (rd << 7) | op
 
-    return op | rd | imm
+    
 
 
-def encode_J_type(op, rd, imm):
+def encode_J_type(op: int, rd: int, imm: int) -> int:
     """
-    Encodes J-type instruction into a 32-bit integer
+    Encode a J-type instruction into a 32-bit integer
 
-    Format:
+    Bit layout:
     | imm[20] | imm[10:1] | imm[11] | imm[19:12] |   rd   |   op  |
     |                   12-bit                   |  5-bit | 7-bit |
 
@@ -164,18 +181,23 @@ def encode_J_type(op, rd, imm):
     imm = imm & 0x1FFFFF
 
     # Extract imm[10:1]
-    imm_10_1 = (imm >> 1) & 0x003FF  # 0000_0000_0011_1111_1111
+    # As with B-type instructions, imm[0] is not encoded
+    imm_10_1 = (imm >> 1) & 0x003FF  
+
     # Extract imm[11]
-    imm_11 = (imm >> 11) & 0x01  # 0000_0001
+    imm_11 = (imm >> 11) & 0x01 
+
     # Extract imm[19:12]
-    imm_19_12 = (imm >> 12) & 0x1FF  # 0001_1111_1111
+    imm_19_12 = (imm >> 12) & 0x1FF 
+
     # Extract imm[20]
     imm_20 = imm >> 20
 
-    rd = rd << 7
-    imm_19_12 = imm_19_12 << 12
-    imm_11 = imm_11 << 20
-    imm_10_1 = imm_10_1 << 21
-    imm_20 = imm_20 << 31
-
-    return op | rd | imm_19_12 | imm_11 | imm_10_1 | imm_20
+    return (
+        op
+        | rd << 7
+        | imm_19_12 << 12
+        | imm_11 << 20
+        | imm_10_1 << 21
+        | imm_20 << 31
+    )
