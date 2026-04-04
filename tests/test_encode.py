@@ -25,7 +25,7 @@ def test_encode_I_type():
   # srai t1, t2, 29  
   assert src.encode.encode_I_type(op=19, rd=6, rs1=7, funct3=5, imm=29) == 0x41D3D313
   # xori x23, x21, 0xFFF
-  assert src.encode.encode_I_type(op=19, rd=23, rs1=21, funct3=5, imm=0xFFF) == 0xFFFACB93
+  assert src.encode.encode_I_type(op=19, rd=23, rs1=21, funct3=4, imm=0xFFF) == 0xFFFACB93
 
 def test_encode_S_type():
   # sw t2, -6(s3)
