@@ -67,6 +67,8 @@ def test_encode_J_type():
   ("ori x1, x2, -1", 0xFFF16093),
   ("sub x7, x8, x9", 0x409403B3),
   ("slli x3, x4, 5", 0x00521193),
+  ("srli s2, s7, 5",0x005BD913),
+  ("srai t1, t2, 29",0x41D3D313),
   ("lw x20, 64(x21)", 0x040AAA03),
   ("lh x10, -128(x21)", 0xF80A9503),
   ("lb s4, 4(x1)", 0x00408A03),
