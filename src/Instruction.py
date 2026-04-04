@@ -3,10 +3,20 @@ from src.isa import REGISTER_FILE, INSTRUCTION_SET
 
 class InstructionError(Exception):
   ...
+# TODO:
+# Add 'label' instance variable to replace 'imm' for Branch and Jump instructions
+# - Update extract_operands to assign label to self.label instead of self.imm
 class Instruction:
   '''
   Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
   Validates instruction format, mnemonic, registers and immediate.
+
+  Stores as instance variables:
+  - Input instruction lower-cased and stripped of whitespace
+  - Instruction mnemonic
+  - Instruction Type
+  - Control bits (Opcode, funct3/7 fields.)
+  - Operands (destination/source registers, immediate)
 
   '''
   def __init__(self, instruction: str):
@@ -61,15 +71,16 @@ class Instruction:
     '''
     for type in INSTRUCTION_SET:
       if self.mnemonic in INSTRUCTION_SET[type]:
-        inst_type = type
+       # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
+       if self.mnemonic in ["lw", "lb", "lh"]: 
+        self.load_type = True
+       else:
+        self.load_type = False
 
-    # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
-    if self.mnemonic in ["lw", "lb", "lh"]: 
-      self.load_type = True
-    else:
-      self.load_type = False
+        return type
+    # Should not reach here since mnemonic parser has validated the mnemonic  
+    raise InstructionError(f"Instruction type undeterminable for mnemonic: {self.mnemonic}")
 
-    return inst_type
   
 
   def _initialize_operands(self):
@@ -152,11 +163,11 @@ class Instruction:
         if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
 
           if self.type == "R-type":
-            #R-type : (mne) rd, rs1, rs2
+            # R-type : (mne) rd, rs1, rs2
             self.rd, self.rs1, self.rs2 = operands.groups()        
             
           if self.type == "B-type":
-            #B-type : (mne) rs1, rs2, imm   imm = branch offset
+            # B-type : (mne) rs1, rs2, imm   imm = branch offset
             self.rs1, self.rs2, self.imm = operands.groups()
 
           return True
@@ -172,7 +183,7 @@ class Instruction:
             return True
         
         elif operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
-            #I-type : (mne) rd, rs1, imm
+            # I-type : (mne) rd, rs1, imm
             self.rd, self.rs1, self.imm = operands.groups()
             return True
         
@@ -180,7 +191,7 @@ class Instruction:
 
         # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
         if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.instruction):
-          #S-type : (mne) rs2, imm(rs1)   imm = offset
+          # S-type : (mne) rs2, imm(rs1)   imm = offset
           self.rs2, self.imm, self.rs1 = operands.groups()
           return True
 
@@ -188,7 +199,7 @@ class Instruction:
 
         # mnemonic space(req.), operand, operand - whitespace next to operands ignored
         if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
-          #U/J-type : (mne) rd, label
+          # U/J-type : (mne) rd, label
           self.rd, self.imm = operands.groups()
           return True
         
