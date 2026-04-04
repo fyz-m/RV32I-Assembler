@@ -10,13 +10,10 @@ class Instruction:
 
   '''
   def __init__(self, instruction):
-    self.Instruction = instruction
-    self.Mnemonic = None
-    self.Type = None
-    self._rd = None
-    self._rs1 = None
-    self._rs2 = None
-    self._imm = None
+    self.Instruction = self._parse_instruction(instruction)
+    self.Mnemonic = self._parse_mnemonic()
+    self.Type = self._parse_type()
+    self._initialize_operands()
     self.extract_operands()
 
     self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
@@ -24,12 +21,9 @@ class Instruction:
     self.funct7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct7"]
   
         
-  @property
-  def Instruction(self):
-      return self._Instruction
+ 
   
-  @Instruction.setter
-  def Instruction(self, instruction):
+  def _parse_instruction(self, instruction):
     '''
     Initialize instruction by lowercasing and striping whitespace
     Basic format checking
@@ -38,18 +32,14 @@ class Instruction:
     if len( instruction.split(" ", 1)) != 2:
       raise InstructionError(f"Invalid instruction format:'{instruction}' \nExpected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' ")
 
-    self._Instruction = instruction.lower().strip()
+    return instruction.lower().strip()
 
 
-  @property
-  def Mnemonic(self):
-    return self._Mnemonic
-  
-  @Mnemonic.setter
-  def Mnemonic(self, _=None):
+
+  def _parse_mnemonic(self):
      '''
      Extract the mnemonic from instruction (e.g add)
-     Check if mnemonic is a valid/supported operation i.e is in the instruction symbol table
+     Validate mnemonic against instruction set
      '''
      # Mnemonic is the first set of characters in an assembly instruction, specifying the operation to perform on the given operands
      # There must be whitespace between the mnemonic and operands
@@ -58,29 +48,36 @@ class Instruction:
      # Check if mnemonic is in INSTRUCTION_SET look-up table
      for type in INSTRUCTION_SET.values():
       if mnemonic in type:
-        self._Mnemonic = mnemonic
-        return           
+        return mnemonic
+                   
         
      raise InstructionError(f"Invalid or unsupported instruction: '{mnemonic}' \nCheck documentation for all supported operations")  
         
         
-  @property
-  def Type(self):
-    return self._Type
-  @Type.setter
-  def Type(self, _=None):
+
+  def _parse_type(self):
     '''
-    Set instruction type based on the mnemonic
-    E.g "add" sets type to "R-type" 
+    Set instruction type (R/I/S/B/U/J) based on the mnemonic
     '''
     for type in INSTRUCTION_SET:
       if self.Mnemonic in INSTRUCTION_SET[type]:
-        self._Type = type
+        return type
 
+    # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
     if self.Mnemonic in ["lw", "lb", "lh"]: 
       self.load_type = True
     else:
       self.load_type = False
+
+  def _initialize_operands(self):
+    '''
+    Sets all operand variables to None-type, extract_operands() sets the operands to their value from the instruction
+    If operand is not in the instruction, the instance variable remains as None.
+    '''
+    self._rd = None
+    self._rs1 = None
+    self._rs2 = None
+    self._imm = None
  
   @property
   def rs1(self):
@@ -88,8 +85,10 @@ class Instruction:
   
   @rs1.setter
   def rs1(self, register):
-    #Validate register
+    # Validate register
     if self.check_reg(register):
+      # Convert the register to its respective register number 
+      # E.g 'zero' = 0 
       self._rs1 = REGISTER_FILE[f"{register}"]
     
 
@@ -99,8 +98,9 @@ class Instruction:
   
   @rs2.setter
   def rs2(self, register):
-    #Validate register
+    # Validate register
     if self.check_reg(register):
+      # Convert the register to its respective register number 
       self._rs2 = REGISTER_FILE[f"{register}"]
 
   @property
@@ -109,8 +109,9 @@ class Instruction:
   
   @rd.setter
   def rd(self, register):
-    #Validate register
+    # Validate register
     if self.check_reg(register):
+      # Convert the register to its respective register number 
       self._rd = REGISTER_FILE[f"{register}"]
 
   @property
@@ -224,7 +225,6 @@ class Instruction:
         
   def check_Immediate(self, immediate):
           '''
-          Takes an integer as input
           Checks if immediate value is valid
 
           I/S-type should be <= 12-bit 
