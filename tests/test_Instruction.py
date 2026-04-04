@@ -10,7 +10,7 @@ import pytest
         ("#Comment"),
 ])
 
-def test_instruction_setter_error(input_inst):
+def test_parse_instruction_error(input_inst):
     
     with pytest.raises(InstructionError):
       instruction = Instruction(input_inst)
@@ -26,7 +26,7 @@ def test_instruction_setter_error(input_inst):
   
 ])
 
-def test_mnemonic_setter(input_inst, expected_mnemonic):
+def test_parse_mnemonic(input_inst, expected_mnemonic):
     instruction = Instruction(input_inst)
     assert instruction.Mnemonic == expected_mnemonic
 
@@ -40,7 +40,7 @@ def test_mnemonic_setter(input_inst, expected_mnemonic):
         
 ])
 
-def test_mnemonic_setter_error(input_inst):
+def test_parse_mnemonic_error(input_inst):
     
     with pytest.raises(InstructionError):
       instruction = Instruction(input_inst)
@@ -95,7 +95,7 @@ def test_checkreg():
         
 def test_immediate_setter():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "I-type"
+   instruction.Type = "I-type"
 
    instruction.imm = "0xABC"
    instruction.imm = "0b10011"
@@ -114,7 +114,7 @@ def test_immediate_setter():
     
 def test_check_immediate_I_S_type():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "I-type"
+   instruction.Type = "I-type"
    
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(23) == True 
@@ -129,8 +129,8 @@ def test_check_immediate_I_S_type():
 
 def test_check_immediate_I_type_shift():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "I-type"
-   instruction._Mnemonic = "slli"
+   instruction.Type = "I-type"
+   instruction.Mnemonic = "slli"
 
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(23) == True 
@@ -147,7 +147,7 @@ def test_check_immediate_I_type_shift():
        
 def test_check_immediate_B_type():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "B-type"
+   instruction.Type = "B-type"
 
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(8191) == True
@@ -161,7 +161,7 @@ def test_check_immediate_B_type():
 
 def test_check_immediate_U_type():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "U-type"
+   instruction.Type = "U-type"
 
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(1048575) == True
@@ -177,7 +177,7 @@ def test_check_immediate_U_type():
 
 def test_check_immediate_J_type():
    instruction = Instruction("add s1, s2, s3")
-   instruction._Type = "J-type"
+   instruction.Type = "J-type"
 
    assert instruction.check_Immediate(0) == True
    assert instruction.check_Immediate(40000) == True
@@ -275,3 +275,29 @@ def test_controlbits(input_inst, expected_op, expected_funct3, expected_funct7):
     assert instruction.op == expected_op
     assert instruction.funct3 == expected_funct3
     assert instruction.funct7 == expected_funct7
+
+@pytest.mark.parametrize("input_inst, valid_inst, expected_operands",[
+        ("add s3, s1, s2", True, {"rs1":9, "rs2":18, "rd":19, "imm":None} ), 
+        ("ADD S3, S1, X12", True, {"rs1":9, "rs2":12, "rd":19, "imm":None} ),
+        ("ADD  S3   ,  S1  ,    X12", True, {"rs1":9, "rs2":12, "rd":19, "imm":None} ), 
+        ("    ADD S3, S1, X12    ", True, {"rs1":9, "rs2":12, "rd":19, "imm":None} ),
+        ("adds3s1s2", False, None ),
+        ("  adds3s1s2  ", False, None )
+        
+])
+
+def test_Instruction(input_inst, valid_inst, expected_operands):
+    
+    if not valid_inst:
+        with pytest.raises(InstructionError):
+            inst = Instruction(input_inst)
+    else:
+        inst = Instruction(input_inst)
+        if expected_operands['rs1']:
+            assert inst.rs1 == expected_operands['rs1']
+        if expected_operands['rs2']:
+            assert inst.rs2 == expected_operands['rs2']
+        if expected_operands['rd']:
+            assert inst.rd == expected_operands['rd']
+        if expected_operands['imm']:
+            assert inst.imm == expected_operands['imm']
