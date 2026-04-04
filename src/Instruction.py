@@ -9,21 +9,21 @@ class Instruction:
   Validates instruction format, mnemonic, registers and immediate.
 
   '''
-  def __init__(self, instruction):
-    self.Instruction = self._parse_instruction(instruction)
-    self.Mnemonic = self._parse_mnemonic()
-    self.Type = self._parse_type()
+  def __init__(self, instruction: str):
+    self.instruction = self._parse_instruction(instruction)
+    self.mnemonic = self._parse_mnemonic()
+    self.type = self._parse_type()
     self._initialize_operands()
     self.extract_operands()
 
-    self.op = INSTRUCTION_SET[self.Type][self.Mnemonic]["op"]
-    self.funct3 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct3"]
-    self.funct7 = INSTRUCTION_SET[self.Type][self.Mnemonic]["funct7"]
+    self.op = INSTRUCTION_SET[self.type][self.mnemonic]["op"]
+    self.funct3 = INSTRUCTION_SET[self.type][self.mnemonic]["funct3"]
+    self.funct7 = INSTRUCTION_SET[self.type][self.mnemonic]["funct7"]
   
         
  
   
-  def _parse_instruction(self, instruction):
+  def _parse_instruction(self, instruction: str) -> str:
     '''
     Initialize instruction by lowercasing and striping whitespace
     Basic format checking
@@ -36,14 +36,14 @@ class Instruction:
 
 
 
-  def _parse_mnemonic(self):
+  def _parse_mnemonic(self) -> str:
      '''
      Extract the mnemonic from instruction (e.g add)
      Validate mnemonic against instruction set
      '''
      # Mnemonic is the first set of characters in an assembly instruction, specifying the operation to perform on the given operands
      # There must be whitespace between the mnemonic and operands
-     mnemonic = self.Instruction.split(" ", 1)[0]
+     mnemonic = self.instruction.split(" ", 1)[0]
      
      # Check if mnemonic is in INSTRUCTION_SET look-up table
      for type in INSTRUCTION_SET.values():
@@ -55,16 +55,16 @@ class Instruction:
         
         
 
-  def _parse_type(self):
+  def _parse_type(self) -> str:
     '''
     Set instruction type (R/I/S/B/U/J) based on the mnemonic
     '''
     for type in INSTRUCTION_SET:
-      if self.Mnemonic in INSTRUCTION_SET[type]:
+      if self.mnemonic in INSTRUCTION_SET[type]:
         inst_type = type
 
     # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
-    if self.Mnemonic in ["lw", "lb", "lh"]: 
+    if self.mnemonic in ["lw", "lb", "lh"]: 
       self.load_type = True
     else:
       self.load_type = False
@@ -87,9 +87,9 @@ class Instruction:
     return self._rs1
   
   @rs1.setter
-  def rs1(self, register):
+  def rs1(self, register: str):
     # Validate register
-    if self.check_reg(register):
+    if self.check_register(register):
       # Convert the register to its respective register number 
       # E.g 'zero' = 0 
       self._rs1 = REGISTER_FILE[f"{register}"]
@@ -100,9 +100,9 @@ class Instruction:
     return self._rs2
   
   @rs2.setter
-  def rs2(self, register):
+  def rs2(self, register: str):
     # Validate register
-    if self.check_reg(register):
+    if self.check_register(register):
       # Convert the register to its respective register number 
       self._rs2 = REGISTER_FILE[f"{register}"]
 
@@ -111,9 +111,9 @@ class Instruction:
     return self._rd
   
   @rd.setter
-  def rd(self, register):
+  def rd(self, register: str):
     # Validate register
-    if self.check_reg(register):
+    if self.check_register(register):
       # Convert the register to its respective register number 
       self._rd = REGISTER_FILE[f"{register}"]
 
@@ -122,16 +122,16 @@ class Instruction:
     return self._imm
   
   @imm.setter
-  def imm(self, immediate):
+  def imm(self, immediate: str):
     # Convert immediate to decimal
     try:
-      immediate = int(f"{immediate}", 0)
+      immediate_int = int(f"{immediate}", 0)
     except ValueError:
       raise InstructionError(f"Invalid immediate: '{immediate}'  \nImmediates must be either: \n -Decimal \n -Hexadecimal prefixed with '0x' \n -Binary prefixed with '0b'")
       
 
-    if self.check_Immediate(immediate):
-      self._imm = immediate
+    if self.check_immediate(immediate_int):
+      self._imm = immediate_int
     
 
   
@@ -144,18 +144,18 @@ class Instruction:
     e.g R-type instructions are in the format "mnemonic a, b, c"
     '''
  
-    match self.Type:
+    match self.type:
 
       case "R-type" | "B-type":
         
         # mnemonic space(req.), operand, operand, operand - whitespace next to operands ignored   
-        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
 
-          if self.Type == "R-type":
+          if self.type == "R-type":
             #R-type : (mne) rd, rs1, rs2
             self.rd, self.rs1, self.rs2 = operands.groups()        
             
-          if self.Type == "B-type":
+          if self.type == "B-type":
             #B-type : (mne) rs1, rs2, imm   imm = branch offset
             self.rs1, self.rs2, self.imm = operands.groups()
 
@@ -166,12 +166,12 @@ class Instruction:
         # Load instructions are in the same format as S-type instructions
         if self.load_type:
 
-          if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
+          if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.instruction):
             # Load I-type : (mne) rd, imm(rs1)
             self.rd, self.imm, self.rs1,  = operands.groups()
             return True
         
-        elif operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
+        elif operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
             #I-type : (mne) rd, rs1, imm
             self.rd, self.rs1, self.imm = operands.groups()
             return True
@@ -179,7 +179,7 @@ class Instruction:
       case "S-type":
 
         # mnemonic space(req.), operand, operand(operand) - whitespace next to operands ignored
-        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.Instruction):
+        if operands := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)\(([a-z0-9]+)\)$", self.instruction):
           #S-type : (mne) rs2, imm(rs1)   imm = offset
           self.rs2, self.imm, self.rs1 = operands.groups()
           return True
@@ -187,16 +187,16 @@ class Instruction:
       case "U-type" | "J-type":
 
         # mnemonic space(req.), operand, operand - whitespace next to operands ignored
-        if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.Instruction):
+        if operands  := re.match(r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction):
           #U/J-type : (mne) rd, label
           self.rd, self.imm = operands.groups()
           return True
         
-    raise InstructionError(f"Invalid format for '{self.Type}' instruction: '{self.Instruction}'\n" f"Expected format: '{self.Valid_format()}' ") 
+    raise InstructionError(f"Invalid format for '{self.type}' instruction: '{self.instruction}'\n" f"Expected format: '{self.valid_format()}' ") 
           
      
-  def Valid_format(self):
-    match self.Type:
+  def valid_format(self):
+    match self.type:
       case "R-type":
         return "(mnemonic) rd, rs1, rs2"
       
@@ -219,14 +219,14 @@ class Instruction:
         return "(mnemonic) rd, label"
 
 
-  def check_reg(self, register):
+  def check_register(self, register: str) -> bool:
 
         if register in REGISTER_FILE:
           return True
         else:
           raise InstructionError(f"Invalid register: '{register}'")
         
-  def check_Immediate(self, immediate):
+  def check_immediate(self, immediate: int) -> bool:
           '''
           Checks if immediate value is valid
 
@@ -239,11 +239,11 @@ class Instruction:
           shift_instructions = ["slli", "srli", "srai"]
             
 
-          match self.Type:
+          match self.type:
             case "I-type" | "S-type":
               
               # If instruction is shift 
-              if self.Mnemonic in shift_instructions:
+              if self.mnemonic in shift_instructions:
                 # Shift instructions immediate is 5-bits since shifting more than 32-bits is redundant (32-bit registers)
                 # Immediate is unsigned - cannot shift by negative amount.
                 # Add one since range upper limit is exclusive
@@ -277,7 +277,7 @@ class Instruction:
               if immediate in valid_range:
                 return True
 
-          raise InstructionError(f"Immediate: '{immediate}' out of range \n'{self.Type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
+          raise InstructionError(f"Immediate: '{immediate}' out of range \n'{self.type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}")
 
   
 
