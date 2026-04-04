@@ -106,7 +106,7 @@ def encode_B_type(op, rs1, rs2, funct3, imm):
     imm = imm & 0x1FFF
 
     # Extract imm[4:1]
-    imm_4_1 = (imm >> 1) & 0x01E  # 0000_0001_1110
+    imm_4_1 = (imm >> 1) & 0x00F  # 0000_0000_1111
 
     # Extract imm[10:5]
     imm_10_5 = (imm >> 5) & 0b00_1111_11
