@@ -13,7 +13,7 @@ Encode
 
 '''
 import re
-from Instruction import Instruction, INSTRUCTION_SET
+from Instruction import Instruction
 from encode import encode
 
 
@@ -85,7 +85,7 @@ def second_pass(input_file, output_file):
             instruction = Instruction(match.group(2))
 
             if instruction.type == "B-type" or "J-type":
-               resolve_label(instruction)
+               instruction.imm = str(get_offset(instruction, int(address)))
 
             encoded_inst = encode(instruction)
 
@@ -107,5 +107,33 @@ def is_comment(line: str) -> bool:
    else:
       return False
    
-def resolve_label(instruction: Instruction):
-      ...
+def get_offset(instruction: Instruction, current_address: int) -> int:
+      '''
+      Args
+         Instruction object
+         Address of the instruction
+      
+      Returns
+         Branch/Jump offset 
+
+      Example:
+         4: LABEL 1:  offset =
+         8: 
+         12:
+      A  16: beq x, x, LABEL 1/2
+         20:
+         24: LABEL 2: offset = 
+
+         The address of the label is the branch target address
+         The branch offset is the number of bytes from the branch instruction to the specified label
+
+         For LABEL 1, branch offset is 24-16 = 8 bytes. BO = BTA - A
+         For LABEL 2, branch offset is 4-16 = -12 bytes. BO = BTA - A 
+      '''
+      target_address = symbol_table[instruction.label]
+
+      return target_address - current_address
+
+
+      
+
