@@ -47,14 +47,19 @@ def first_pass(input_file, output_file):
 
             if label in symbol_table:
                raise ValueError(f"Line {line_num}: \nLabel: '{label}' already used")
-            # If instruction is not on the same line as label, skip to the next line
-            # e.g loop:
-            #
-            # addi s2,s1,s0
+            
+            # If instruction is not on the same line as label, skip to the next line e.g:
+            #  
+            # beq s2, 0, label  ------->   0x0: beq s2, 0, label (label converted into branch offset in second pass, which is 8-bytes here)
+            # addi s2, s2, -1              0x4: addi s2, s2, -1 
+            # label:                       0x8: xor s2, s1, s0
+            # (blank/comment lines)
+            # xor s2, s1, s0
             if not instruction:
-               # Label gets address of next instruction line 
-               # Blank lines do not increment the address so next address will always be the instruction the label is pointing to
-               symbol_table[label] = hex(address+4)
+               # As above, the address where the label is located == address of instruction label is pointing to 
+               symbol_table[label] = hex(address)
+               # This gives the address of the current label to the next instruction line, since address += 4 on the next non blank/comment line
+               address -= 4
                continue
             
             else:
