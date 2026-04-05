@@ -14,60 +14,75 @@ Encode
 '''
 
 import re
+# Contains the label and its instruction address
+symbol_table = {}
 
-Symbol_table = {}
+'''def main():
+   first_pass("test.txt", "temp.txt")
+   print(Symbol_table)'''
 
-def main():
-   first_pass("test.txt")
-   print(Symbol_table)
-
-def first_pass(file):
+def first_pass(input_file, output_file):
+  '''
+  Adds memory address to each instruction, collects labels in a symbol tabel
+  '''
   lines_to_write = []
   address = 0
 
-  with open(f"{file}", "r") as f:
+  with open(f"{input_file}", "r") as f:
     lines = f.readlines()
     line_num = 0
+
     for line in lines:
        line = line.strip() 
+       # Skip if line is a comment or blank
        if is_comment(line) or not line:
-          pass    
-       
-       else:
-          line_num += 1
-          address += 4
+          continue    
+           
+       line_num += 1
+       address += 4
+       instruction = line
 
-          if match := re.match(r"(.+):(.*)", line):
-            label = match.group(1).strip()
-            line = match.group(2).strip()
+       if label := collect_label(line):
+            instruction = line.replace(f"{label}:", "")
 
-            if label in Symbol_table:
+            if label in symbol_table:
                raise ValueError(f"Line {line_num}: \nLabel: '{label}' already used")
             # If instruction is not on the same line as label, skip to the next line
-            if not line:
-               # Label gets address of next non-empty line
-               Symbol_table[label] = hex(address+4)
+            # e.g loop:
+            #
+            # addi s2,s1,s0
+            if not instruction:
+               # Label gets address of next instruction line 
+               # Blank lines do not increment the address so next address will always be the instruction the label is pointing to
+               symbol_table[label] = hex(address+4)
                continue
             
             else:
-              Symbol_table[label] = hex(address)
+              symbol_table[label] = hex(address)
           
-          lines_to_write.append(f"{hex(address)}: {line}\n")
+       lines_to_write.append(f"{hex(address)}: {instruction}\n")
 
 
-  with open(f"output.txt", "w") as output:
+  with open(f"{output_file}", "w") as output:
      output.writelines(lines_to_write)
    
            
             
+def collect_label(line):
+
+   if match := re.match(r"(.+):(.*)", line):
+            return match.group(1).strip()
+   else:
+            return None
+
+
 
    
 
-def is_comment(line):
+def is_comment(line: str) -> bool:
    
    if match := re.match(r"#.*", line):
       return True
    else:
       return False
    
-main()
