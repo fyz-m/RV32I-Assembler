@@ -12,18 +12,18 @@ Assign each line as an instruction object - validation and operand extracting
 Encode
 
 '''
-
 import re
+from Instruction import Instruction, INSTRUCTION_SET
+from encode import encode
+
+
 # Contains the label and its instruction address
 symbol_table = {}
 
-'''def main():
-   first_pass("test.txt", "temp.txt")
-   print(Symbol_table)'''
 
 def first_pass(input_file, output_file):
   '''
-  Adds memory address to each instruction, collects labels in a symbol tabel
+  Adds memory address to each instruction, collects labels in a symbol table
   '''
   lines_to_write = []
   address = 0
@@ -72,17 +72,33 @@ def first_pass(input_file, output_file):
      output.writelines(lines_to_write)
    
            
-            
+
+def second_pass(input_file, output_file):
+    
+    with open(f"{input_file}", "r") as f:
+      lines = f.readlines()
+      line_num = 0
+
+      for line in lines:
+         if match := re.match(r"^(.*):(.+)( *#.*)?$", line):
+            address = match.group(1)
+            instruction = Instruction(match.group(2))
+
+            if instruction.type == "B-type" or "J-type":
+               resolve_label(instruction)
+
+            encoded_inst = encode(instruction)
+
+
+    ...
+          
 def collect_label(line):
 
    if match := re.match(r"(.+):(.*)", line):
-            return match.group(1).strip()
+      return match.group(1).strip()
    else:
-            return None
+       return None
 
-
-
-   
 
 def is_comment(line: str) -> bool:
    
@@ -91,3 +107,5 @@ def is_comment(line: str) -> bool:
    else:
       return False
    
+def resolve_label(instruction: Instruction):
+      ...
