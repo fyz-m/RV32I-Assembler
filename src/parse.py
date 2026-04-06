@@ -81,11 +81,11 @@ def second_pass(input_file, output_file):
 
       for line in lines:
          if match := re.match(r"^(.*):(.+)( *#.*)?$", line):
-            address = match.group(1)
+            address = int(match.group(1))
             instruction = Instruction(match.group(2))
 
             if instruction.type == "B-type" or "J-type":
-               instruction.imm = str(get_offset(instruction, int(address)))
+               instruction.imm = get_offset(instruction.label, address) # type: ignore
 
             encoded_inst = encode(instruction)
 
@@ -107,7 +107,7 @@ def is_comment(line: str) -> bool:
    else:
       return False
    
-def get_offset(instruction: Instruction, current_address: int) -> int:
+def get_offset(label: str, current_address: int) -> int:
       '''
       Args
          Instruction object
@@ -130,7 +130,7 @@ def get_offset(instruction: Instruction, current_address: int) -> int:
          For LABEL 1, branch offset is 24-16 = 8 bytes. BO = BTA - A
          For LABEL 2, branch offset is 4-16 = -12 bytes. BO = BTA - A 
       '''
-      target_address = symbol_table[instruction.label]
+      target_address = symbol_table[label]
 
       return target_address - current_address
 
