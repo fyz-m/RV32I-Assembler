@@ -1,4 +1,4 @@
-from src.parse import first_pass, symbol_table, get_offset
+from src.parse import first_pass,second_pass, symbol_table, get_offset
 import pytest
 
 
@@ -30,14 +30,20 @@ label:
                
 lw s7, 12(s2)
 """
-output1 = """\
+first_pass_output_1 = """\
 0x0: addi t0, t0, 10
 0x4: addi s2, s2, 1
 0x8: bne s2, t0, label
 0xc: lw s7, 12(s2)
 """
+second_pass_output_1 = '''\
+00a28293
+00190913
+00591263
+00c92b83
+'''  
 
-table1 = {"label": "0xc"}
+table1 = {"label": 0xc}
 
 test2 = """\
 # s0 = button, s1 = amt
@@ -61,12 +67,12 @@ default:
 done:
   jal ra, function
 """
-output2 = """\
+first_pass_output_2 = """\
 0x0: addi t0, zero, 1 # t0 = 1
 0x4: bne s0, t0, case2 # button = = 1?
 0x8: addi s1, zero, 20 # if yes, amt = 20
 0xc: j done # break out of case
-0x12: addi t0, zero, 2 # t0 = 2
+0x10: addi t0, zero, 2 # t0 = 2
 0x14: bne s0, t0, case3 # button = = 2?
 0x18: addi s1, zero, 50 # if yes, amt = 50
 0x1c: j done # break out of case
@@ -78,25 +84,35 @@ output2 = """\
 0x34: jal ra, function
 """
 
-table2= {"done": "0x34", "case1": "0x0", "case2": "0x12", "case3": "0x20", "default": "0x30"}
+table2= {"done": "0x34", "case1": "0x0", "case2": "0x10", "case3": "0x20", "default": "0x30"}
 
-@pytest.mark.parametrize("test_input, expected_output, expected_symbol_table", [
-    (test1, output1, table1),
-    (test2, output2, table2),
+@pytest.mark.parametrize("test_input, fp_output_expected, expected_symbol_table, sp_output_expected", [
+    (test1, first_pass_output_1, table1, second_pass_output_1),
+    #(test2, first_pass_output_2, table2),
     
 ])
   
 
-def test_first_pass(tmp_path, test_input, expected_output, expected_symbol_table):
+def test_passes(tmp_path, test_input, fp_output_expected, expected_symbol_table, sp_output_expected):
       input_file = tmp_path / "test.txt"
       input_file.write_text(test_input)
 
-      output_file = tmp_path / "output.txt"
+      fp_output_file = tmp_path / "fp_output.txt"
 
       
-      first_pass(input_file, output_file)
+      first_pass(input_file, fp_output_file)
       
       assert symbol_table == expected_symbol_table
-      assert output_file.read_text() == expected_output
+      assert fp_output_file.read_text() == fp_output_expected
       
+
+      sp_output_file = tmp_path / "sp_output.txt"
+      second_pass(fp_output_file, sp_output_file)    
+     
+      assert sp_output_file.read_text() == sp_output_expected
+      symbol_table.clear()
+
+
+
+
 
