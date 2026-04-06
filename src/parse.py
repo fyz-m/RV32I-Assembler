@@ -37,9 +37,11 @@ def first_pass(input_file, output_file):
        # Skip if line is a comment or blank
        if is_comment(line) or not line:
           continue    
-           
+       # Address of first instruction remains 0    
+       if line_num != 0:
+         address += 4
+
        line_num += 1
-       address += 4
        instruction = line
 
        if label := collect_label(line):
