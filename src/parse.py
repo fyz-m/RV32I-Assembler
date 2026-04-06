@@ -13,8 +13,8 @@ Encode
 
 '''
 import re
-from Instruction import Instruction
-from encode import encode
+from src.Instruction import Instruction
+from src.encode import encode
 
 
 # Contains the label and its instruction address
@@ -75,6 +75,8 @@ def first_pass(input_file, output_file):
 
 def second_pass(input_file, output_file):
     
+    encoded_instructions = []
+    
     with open(f"{input_file}", "r") as f:
       lines = f.readlines()
       line_num = 0
@@ -88,8 +90,10 @@ def second_pass(input_file, output_file):
                instruction.imm = get_offset(instruction.label, address) # type: ignore
 
             encoded_inst = encode(instruction)
+            encoded_instructions.append(f"{encoded_inst}\n")
 
-
+    with open(f"{output_file}", "w") as output:
+     output.writelines(encoded_instructions)
     ...
           
 def collect_label(line):
