@@ -1,29 +1,24 @@
-''' 
-First parse: 
-- Remove blank lines and comments
-
-- Add memory address to each instruction 
-- Collect labels for encoding in a symbol table 
-- Use regex to find labels and to seperate them from instructions
-
-
-Second parse:
-Assign each line as an instruction object - validation and operand extracting
-Encode
-
-'''
-import re
-from src.Instruction import Instruction
+import re, os
+from src.Instruction import Instruction, InstructionError
 from src.encode import encode
 
 
 # Contains the label and its instruction address
 symbol_table = {}
 
+def assemble(assembly_file):
+   '''
+   Takes an assembly file as input and translates it into machine code
+   '''
+   first_pass(assembly_file, "temp.txt")
+   second_pass("temp.txt", f"{assembly_file}_assembled.txt")
+   os.remove("temp.txt")
 
 def first_pass(input_file, output_file):
   '''
-  Adds memory address to each instruction, collects labels in a symbol table
+  Adds memory address to each instruction 
+  Collects labels in a symbol table for offset/immediate calculation of J/B-type instructions
+  Removes blank lines and comments
   '''
   lines_to_write = []
   address = 0
@@ -76,29 +71,31 @@ def first_pass(input_file, output_file):
            
 
 def second_pass(input_file, output_file):
+    '''
+    Translates each instruction into machine code (hexadecimal)
+    Removes comments beside instructions
+    '''
     
     encoded_instructions = []
     
     with open(f"{input_file}", "r") as f:
       lines = f.readlines()
-      line_num = 0
-
+      
       for line in lines:
          
-         if match := re.match(r"^(.*): ([a-zA-Z0-9, ]+)(#.*)?$", line):
+         if match := re.match(r"^(.*): ([^#]+)(#.*)?$", line):
             address = int(match.group(1), 0)
             instruction = Instruction(match.group(2))
 
             if instruction.label is not None:
                instruction.imm = get_offset(instruction.label, address) # type: ignore
-
+            # Convert into 32-bit hexadecimal str
             encoded_inst = format(encode(instruction),'08x' )
             encoded_instructions.append(f"{encoded_inst}\n")
 
     with open(f"{output_file}", "w") as output:
      output.writelines(encoded_instructions)
     
-    symbol_table.clear()
           
 def collect_label(line):
 
@@ -144,4 +141,3 @@ def get_offset(label: str, current_address: int) -> int:
 
 
       
-
