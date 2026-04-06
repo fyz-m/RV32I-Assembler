@@ -59,13 +59,13 @@ def first_pass(input_file, output_file):
             # xor s2, s1, s0
             if not instruction:
                # As above, the address where the label is located == address of instruction label is pointing to 
-               symbol_table[label] = hex(address)
+               symbol_table[label] = address
                # This gives the address of the current label to the next instruction line, since address += 4 on the next non blank/comment line
                address -= 4
                continue
             
             else:
-              symbol_table[label] = hex(address)
+              symbol_table[label] = address
           
        lines_to_write.append(f"{hex(address)}: {instruction}\n")
 
@@ -85,13 +85,13 @@ def second_pass(input_file, output_file):
 
       for line in lines:
          if match := re.match(r"^(.*):(.+)( *#.*)?$", line):
-            address = int(match.group(1))
+            address = int(match.group(1), 0)
             instruction = Instruction(match.group(2))
 
-            if instruction.type == "B-type" or "J-type":
+            if instruction.label is not None:
                instruction.imm = get_offset(instruction.label, address) # type: ignore
 
-            encoded_inst = encode(instruction)
+            encoded_inst = format(encode(instruction),'08x' )
             encoded_instructions.append(f"{encoded_inst}\n")
 
     with open(f"{output_file}", "w") as output:
