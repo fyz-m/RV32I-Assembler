@@ -194,29 +194,28 @@ def test_check_immediate_J_type():
       assert instruction.check_immediate(2400000)  
 
 @pytest.mark.parametrize("input_inst, expected_operands",[
-        ("add s3, s1, s2", {"rs1":9, "rs2":18, "rd":19, "imm":None} ),   
-        ("addi s3, s1, 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ), 
-        ("addi s3, s1, -15", {"rs1":9, "rs2":None, "rd":19, "imm":-15} ),
-        ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12} ), 
-        ("sw s3, -80(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":-80} ),
-        ("beq s3, s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":47} ),  
-        ("beq s3, s1, -47", {"rs1":19, "rs2":9, "rd":None, "imm":-47} ), 
-        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),
-        ("lui s3, -400", {"rs1":None, "rs2":None, "rd":19, "imm":-400} ),   
-        ("jal ra, 0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ),
-        ("jal ra, -80", {"rs1":None, "rs2":None, "rd":1, "imm":-80} ), 
+        ("add s3, s1, s2", {"rs1":9, "rs2":18, "rd":19, "imm":None, "label":None} ),   
+        ("addi s3, s1, 10", {"rs1":9, "rs2":None, "rd":19, "imm":10, "label":None} ), 
+        ("addi s3, s1, -15", {"rs1":9, "rs2":None, "rd":19, "imm":-15, "label":None} ),
+        ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12, "label":None} ), 
+        ("sw s3, -80(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":-80, "label":None} ),
+        ("beq s3, s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"47"} ),  
+        ("beq s3, s1, -47", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"-47"} ), 
+        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575, "label":None} ),
+        ("lui s3, -400", {"rs1":None, "rs2":None, "rd":19, "imm":-400, "label":None} ),   
+    
+        ("add  S3 ,s1,    s2", {"rs1":9, "rs2":18, "rd":19, "imm":None, "label":None} ),   
+        ("addi     s3, s1   , 10", {"rs1":9, "rs2":None, "rd":19, "imm":10, "label":None} ),  
+        ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12, "label":None} ), 
+        ("sw   t0   ,    10(x1)", {"rs1":1, "rs2":5, "rd":None, "imm":10, "label":None} ),
+        ("beq   s3 , s1, jump", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"jump"} ),  
+        ("lui s3,0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575, "label":None} ),   
+        ("jal ra,0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":None, "label":"0b1011"} ),
+        ("jal ra, loop", {"rs1":None, "rs2":None, "rd":1, "imm":None, "label":'loop'} ), 
 
-        ("add  S3 ,s1,    s2", {"rs1":9, "rs2":18, "rd":19, "imm":None} ),   
-        ("addi     s3, s1   , 10", {"rs1":9, "rs2":None, "rd":19, "imm":10} ),  
-        ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12} ), 
-        ("sw   t0   ,    10(x1)", {"rs1":1, "rs2":5, "rd":None, "imm":10} ),
-        ("beq   s3 , s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":47} ),  
-        ("lui s3,0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575} ),   
-        ("jal ra,0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":11} ), 
-
-        ("lw x20, 64(x21)", {"rs1":21, "rs2":None, "rd":20, "imm":64} ),
-        ("lh x8, -800(x14)", {"rs1":14, "rs2":None, "rd":8, "imm":-800} ),
-        ("lb x1, 4(x1)", {"rs1":1, "rs2":None, "rd":1, "imm":4} ),
+        ("lw x20, 64(x21)", {"rs1":21, "rs2":None, "rd":20, "imm":64, "label":None} ),
+        ("lh x8, -800(x14)", {"rs1":14, "rs2":None, "rd":8, "imm":-800, "label":None} ),
+        ("lb x1, 4(x1)", {"rs1":1, "rs2":None, "rd":1, "imm":4, "label":None} ),
 
 
 ])
@@ -232,6 +231,8 @@ def test_extract_operands(input_inst, expected_operands):
         assert instruction.rd == expected_operands['rd']
   if expected_operands['imm']:
         assert instruction.imm == expected_operands['imm']
+  if expected_operands['label']:
+        assert instruction.label == expected_operands['label']
   
 @pytest.mark.parametrize("input_inst",[
         ("adds1, s2, s3"),
