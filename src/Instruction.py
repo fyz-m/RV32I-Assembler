@@ -5,9 +5,6 @@ from src.isa import REGISTER_FILE, INSTRUCTION_SET
 class InstructionError(Exception): ...
 
 
-# TODO:
-# Add 'label' instance variable to replace 'imm' for Branch and Jump instructions
-# - Update extract_operands to assign label to self.label instead of self.imm
 class Instruction:
     """
     Instruction object is exactly one line of assembly string (e.g add, s3, s2, s1)
@@ -91,6 +88,7 @@ class Instruction:
         self._rd = None
         self._rs1 = None
         self._rs2 = None
+        self._label = None
         self._imm = None
 
     @property
@@ -128,11 +126,20 @@ class Instruction:
             self._rd = REGISTER_FILE[f"{register}"]
 
     @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, label: str):
+        self._label = label.strip()
+
+
+    @property
     def imm(self):
         return self._imm
 
     @imm.setter
-    def imm(self, immediate: str):
+    def imm(self, immediate: str|int):
         # Convert immediate to decimal
         try:
             immediate_int = int(f"{immediate}", 0)
@@ -169,7 +176,7 @@ class Instruction:
 
                     if self.type == "B-type":
                         # B-type : (mne) rs1, rs2, imm   imm = branch offset
-                        self.rs1, self.rs2, self.imm = operands.groups()
+                        self.rs1, self.rs2, self.label = operands.groups()
 
                     return True
 
@@ -211,8 +218,12 @@ class Instruction:
                 if operands := re.match(
                     r"^[a-z]+ +([a-z0-9]+) *, *(-?[a-z0-9]+)$", self.instruction
                 ):
-                    # U/J-type : (mne) rd, label
-                    self.rd, self.imm = operands.groups()
+                    if self.type == "J-type":
+                        # J-type : (mne) rd, label
+                        self.rd, self.label = operands.groups()
+                    else:
+                        # U-type : (mne) rd, imm
+                        self.rd, self.imm = operands.groups()
                     return True
 
         raise InstructionError(
