@@ -84,7 +84,8 @@ def second_pass(input_file, output_file):
       line_num = 0
 
       for line in lines:
-         if match := re.match(r"^(.*):(.+)( *#.*)?$", line):
+         
+         if match := re.match(r"^(.*): ([a-zA-Z0-9, ]+)(#.*)?$", line):
             address = int(match.group(1), 0)
             instruction = Instruction(match.group(2))
 
@@ -96,7 +97,8 @@ def second_pass(input_file, output_file):
 
     with open(f"{output_file}", "w") as output:
      output.writelines(encoded_instructions)
-    ...
+    
+    symbol_table.clear()
           
 def collect_label(line):
 
