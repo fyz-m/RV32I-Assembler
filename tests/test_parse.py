@@ -113,7 +113,6 @@ def test_passes(tmp_path, test_input, fp_output_expected, expected_symbol_table,
       input_file.write_text(test_input)
 
       fp_output_file = tmp_path / "fp_output.txt"
-
       first_pass(input_file, fp_output_file)
       
       assert symbol_table == expected_symbol_table
@@ -122,8 +121,9 @@ def test_passes(tmp_path, test_input, fp_output_expected, expected_symbol_table,
 
       sp_output_file = tmp_path / "sp_output.txt"
       second_pass(fp_output_file, sp_output_file)    
-      
+
       assert sp_output_file.read_text() == sp_output_expected
+      symbol_table.clear()
       
 
 
