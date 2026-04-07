@@ -11,6 +11,7 @@ def assemble(assembly_file):
    Takes an assembly file as input and translates it into machine code
    '''
    first_pass(assembly_file, "temp.txt")
+   assembly_file = assembly_file.split(".")[0]
    second_pass("temp.txt", f"{assembly_file}_assembled.txt")
    os.remove("temp.txt")
 
