@@ -31,10 +31,10 @@ label:
 lw s7, 12(s2)
 """
 first_pass_output_1 = """\
-0x0: addi t0, t0, 10
-0x4: addi s2, s2, 1
-0x8: bne s2, t0, label
-0xc: lw s7, 12(s2)
+2 0x0: addi t0, t0, 10
+5 0x4: addi s2, s2, 1
+6 0x8: bne s2, t0, label
+11 0xc: lw s7, 12(s2)
 """
 second_pass_output_1 = '''\
 00a28293
@@ -67,20 +67,20 @@ done:
   addi zero, zero, 0
 """
 first_pass_output_2 = """\
-0x0: addi t0, zero, 1 # t0 = 1
-0x4: bne s0, t0, case2 # button = = 1?
-0x8: addi s1, zero, 20 # if yes, amt = 20
-0xc: jal x0, done # break out of case
-0x10: addi t0, zero, 2 # t0 = 2
-0x14: bne s0, t0, case3 # button = = 2?
-0x18: addi s1, zero, 50 # if yes, amt = 50
-0x1c: jal x0, done # break out of case
-0x20: addi t0, zero, 3 # t0 = 3
-0x24: bne s0, t0, default # button = = 3?
-0x28: addi s1, zero, 100 # if yes, amt = 100
-0x2c: jal x0, done # break out of case
-0x30: add s1, zero, zero # amt=0
-0x34: addi zero, zero, 0
+3 0x0: addi t0, zero, 1 # t0 = 1
+4 0x4: bne s0, t0, case2 # button = = 1?
+5 0x8: addi s1, zero, 20 # if yes, amt = 20
+6 0xc: jal x0, done # break out of case
+8 0x10: addi t0, zero, 2 # t0 = 2
+9 0x14: bne s0, t0, case3 # button = = 2?
+10 0x18: addi s1, zero, 50 # if yes, amt = 50
+11 0x1c: jal x0, done # break out of case
+13 0x20: addi t0, zero, 3 # t0 = 3
+14 0x24: bne s0, t0, default # button = = 3?
+15 0x28: addi s1, zero, 100 # if yes, amt = 100
+16 0x2c: jal x0, done # break out of case
+18 0x30: add s1, zero, zero # amt=0
+20 0x34: addi zero, zero, 0
 """
 second_pass_output_2 = '''\
 00100293
