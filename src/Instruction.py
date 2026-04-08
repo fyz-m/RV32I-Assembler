@@ -38,7 +38,9 @@ class Instruction:
         # instruction is not in format "mnemonic operands"
         if len(instruction.split(" ", 1)) != 2:
             raise InstructionError(
-                f"Invalid instruction format:'{instruction}' \nExpected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' "
+                f"Invalid instruction format\n"
+                f"       > {instruction.strip()}\n" 
+                "       - Expected: 'mnemonic(e.g add)' + ' ' + 'operands(e.g s2, s1, s0)' "
             )
 
         return instruction.lower().strip()
@@ -58,7 +60,9 @@ class Instruction:
                 return mnemonic
 
         raise InstructionError(
-            f"Invalid or unsupported instruction: '{mnemonic}' \nCheck documentation for all supported operations"
+            f"Invalid or unsupported instruction '{mnemonic}'\n"
+            f"       > {self.instruction}\n"
+            "       - Check documentation for all supported operations"
         )
 
     def _parse_type(self) -> str:
@@ -77,7 +81,7 @@ class Instruction:
 
         # Should not reach here since mnemonic parser has validated the mnemonic
         raise InstructionError(
-            f"Instruction type undeterminable for mnemonic: {self.mnemonic}"
+            f"Instruction type undeterminable for mnemonic '{self.mnemonic}'"
         )
 
     def _initialize_operands(self):
@@ -145,7 +149,12 @@ class Instruction:
             immediate_int = int(f"{immediate}", 0)
         except ValueError:
             raise InstructionError(
-                f"Invalid immediate: '{immediate}'  \nImmediates must be either: \n -Decimal \n -Hexadecimal prefixed with '0x' \n -Binary prefixed with '0b'"
+                f"Invalid immediate '{immediate}'\n"
+                f"       > {self.instruction}\n"
+                "       - Immediates must be either:\n"
+                "        - Decimal\n" 
+                "        - Hexadecimal prefixed with '0x'\n" 
+                "        - Binary prefixed with '0b'"
             )
 
         if self.check_immediate(immediate_int):
@@ -227,39 +236,43 @@ class Instruction:
                     return True
 
         raise InstructionError(
-            f"Invalid format for '{self.type}' instruction: '{self.instruction}'\n"
-            f"Expected format: '{self.valid_format()}' "
+            f"Invalid format for {self.type} instruction\n"
+            f"       > {self.instruction}\n"
+            f"       - Expected format: '{self.valid_format()}'"
         )
 
     def valid_format(self):
         match self.type:
             case "R-type":
-                return "(mnemonic) rd, rs1, rs2"
+                return "mnemonic rd, rs1, rs2"
 
             case "I-type":
                 if self.load_type:
-                    return "(mnemonic) rs2, offset(rs1)"
+                    return "mnemonic rs2, offset(rs1)"
                 else:
-                    return "(mnemonic) rd, rs1, immediate"
+                    return "mnemonic rd, rs1, immediate"
 
             case "S-type":
-                return "(mnemonic) rs2, offset(rs1)"
+                return "mnemonic rs2, offset(rs1)"
 
             case "B-type":
-                return "(mnemonic) rs1, rs2, label"
+                return "mnemonic rs1, rs2, label"
 
             case "U-type":
-                return "(mnemonic) rd, immediate"
+                return "mnemonic rd, immediate"
 
             case "J-type":
-                return "(mnemonic) rd, label"
+                return "mnemonic rd, label"
 
     def check_register(self, register: str) -> bool:
 
         if register in REGISTER_FILE:
             return True
         else:
-            raise InstructionError(f"Invalid register: '{register}'")
+            raise InstructionError(
+                f"Invalid register '{register}'\n"
+                f"       > {self.instruction}"
+                )
 
     def check_immediate(self, immediate: int) -> bool:
         """
@@ -312,5 +325,7 @@ class Instruction:
                     return True
 
         raise InstructionError(
-            f"Immediate: '{immediate}' out of range \n'{self.type}' instruction immediate must be in the range: {valid_range[0]} - {valid_range[-1]}"
+            f"Immediate '{immediate}' out of range \n" 
+            f"       > {self.instruction}\n"
+            f"       - {self.type} instruction immediate must be in the range: {valid_range[0]} to {valid_range[-1]}"
         )
