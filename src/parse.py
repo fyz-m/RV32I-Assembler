@@ -17,7 +17,7 @@ def assemble(assembly_file):
    
    if len(error_list) != 0:
       print(f"\n  Failed with {len(error_list)} error(s):\n")
-      for error in error_list:
+      for error in sorted(error_list, key=lambda x: int(x.split(":")[0][10:])):
          print(error)
 
 def first_pass(input_file, output_file):
@@ -49,7 +49,11 @@ def first_pass(input_file, output_file):
             instruction = line.replace(f"{label}:", "")
 
             if label in symbol_table:
-               raise ValueError(f"Line {line_num}: \nLabel: '{label}' already used")
+               label_org = []
+               error_list.append(
+                  f"      line {line_num}: Label {label} already used on {label_org}\n"
+                  f"       > {line}\n"
+                  )
             
             # If instruction is not on the same line as label, skip to the next line e.g:
             #  
