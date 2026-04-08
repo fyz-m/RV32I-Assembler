@@ -2,9 +2,9 @@ import re, os
 from src.Instruction import Instruction, InstructionError
 from src.encode import encode
 
-
-# Contains the label and its instruction address
+# Contains labels and its instruction address
 symbol_table = {}
+error_list = []
 
 def assemble(assembly_file):
    '''
@@ -14,6 +14,11 @@ def assemble(assembly_file):
    assembly_file = assembly_file.split(".")[0]
    second_pass("temp.txt", f"{assembly_file}_assembled.txt")
    os.remove("temp.txt")
+   
+   if len(error_list) != 0:
+      print(f"\n  Failed with {len(error_list)} error(s):\n")
+      for error in error_list:
+         print(error)
 
 def first_pass(input_file, output_file):
   '''
@@ -22,22 +27,22 @@ def first_pass(input_file, output_file):
   Removes blank lines and comments
   '''
   lines_to_write = []
-  address = 0
+  # Address of first instruction remains 0    
+  address = -4
 
   with open(f"{input_file}", "r") as f:
     lines = f.readlines()
     line_num = 0
 
     for line in lines:
+       line_num += 1
        line = line.strip() 
        # Skip if line is a comment or blank
        if is_comment(line) or not line:
           continue    
-       # Address of first instruction remains 0    
-       if line_num != 0:
-         address += 4
-
-       line_num += 1
+       
+       
+       address += 4
        instruction = line
 
        if label := collect_label(line):
@@ -63,7 +68,7 @@ def first_pass(input_file, output_file):
             else:
               symbol_table[label] = address
           
-       lines_to_write.append(f"{hex(address)}: {instruction}\n")
+       lines_to_write.append(f"{line_num} {hex(address)}: {instruction}\n")
 
 
   with open(f"{output_file}", "w") as output:
@@ -84,19 +89,32 @@ def second_pass(input_file, output_file):
       
       for line in lines:
          
-         if match := re.match(r"^(.*): ([^#]+)(#.*)?$", line):
-            address = int(match.group(1), 0)
-            instruction = Instruction(match.group(2))
+         if match := re.match(r"^([0-9]+) (.*): ([^#]+)(#.*)?$", line):
+            line_num = match.group(1)
+            address = int(match.group(2), 0)
 
-            if instruction.label is not None:
-               instruction.imm = get_offset(instruction.label, address) # type: ignore
-            # Convert into 32-bit hexadecimal str
-            encoded_inst = format(encode(instruction),'08x' )
-            encoded_instructions.append(f"{encoded_inst}\n")
+            try:
+               instruction = Instruction(match.group(3))
+               if instruction.label is not None:
+                  instruction.imm = get_offset(instruction.label, address) # type: ignore
 
-    with open(f"{output_file}", "w") as output:
-     output.writelines(encoded_instructions)
-    
+               # Convert into 32-bit hexadecimal str
+               encoded_inst = format(encode(instruction),'08x' )
+               encoded_instructions.append(f"{encoded_inst}\n")
+
+            except InstructionError as e:
+                   error_list.append(f"      line {line_num}: {str(e)}\n")
+                   # Cancel pass if 10 errors are encountered
+                   if len(error_list) >= 10:
+                      return
+                   
+                   continue
+
+           
+    if len(error_list) == 0:
+      with open(f"{output_file}", "w") as output:
+         output.writelines(encoded_instructions)
+      
           
 def collect_label(line):
 
