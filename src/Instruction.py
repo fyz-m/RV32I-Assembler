@@ -145,20 +145,25 @@ class Instruction:
     @imm.setter
     def imm(self, immediate: str|int):
         # Convert immediate to decimal
-        try:
-            immediate_int = int(f"{immediate}", 0)
-        except ValueError:
-            raise InstructionError(
-                f"Invalid immediate '{immediate}'\n"
-                f"       > {self.instruction}\n"
-                "       - Immediates must be either:\n"
-                "        - Decimal\n" 
-                "        - Hexadecimal prefixed with '0x'\n" 
-                "        - Binary prefixed with '0b'"
-            )
+        if type(immediate) == str:
+            try:
+                # If number is hexadecimal
+                if immediate.startswith("0x"):
+                    immediate = self.convert_hex(immediate)
+                else:
+                    immediate = int(f"{immediate}", 0)
+            except ValueError:
+                raise InstructionError(
+                    f"Invalid immediate '{immediate}'\n"
+                    f"       > {self.instruction}\n"
+                    "       - Immediates must be either:\n"
+                    "        - Decimal\n" 
+                    "        - Hexadecimal prefixed with '0x'\n" 
+                    "        - Binary prefixed with '0b'"
+                )
 
-        if self.check_immediate(immediate_int):
-            self._imm = immediate_int
+        if self.check_immediate(immediate): #type:ignore
+            self._imm = immediate
 
     def extract_operands(self):
         """
@@ -273,7 +278,9 @@ class Instruction:
                 f"Invalid register '{register}'\n"
                 f"       > {self.instruction}"
                 )
-
+        
+    shift_instructions = ["slli", "srli", "srai"]
+    
     def check_immediate(self, immediate: int) -> bool:
         """
         Checks if immediate value is valid
@@ -284,22 +291,22 @@ class Instruction:
         U-type should be <= 20-bit
         J-type should be <= 21-bit
         """
-        shift_instructions = ["slli", "srli", "srai"]
+       
 
         match self.type:
             case "I-type" | "S-type":
 
                 # If instruction is shift
-                if self.mnemonic in shift_instructions:
+                if self.mnemonic in self.shift_instructions:
                     # Shift instructions immediate is 5-bits since shifting more than 32-bits is redundant (32-bit registers)
                     # Immediate is unsigned - cannot shift by negative amount.
                     # Add one since range upper limit is exclusive
                     valid_range = range(0, (2**5) + 1)
                 else:
                     # Immediate is a 12-bit signed number (two's complement)
-                    # Signed numbers are in the range: -2^n to 2^n - 1  where n is number of bits
+                    # Signed numbers are in the range: -2^(n-1) to 2^(n-1) - 1  where n is number of bits
                     # Since upper limit of range is exclusive, subtracting one is not neccesary
-                    valid_range = range(-(2**12), 2**12)
+                    valid_range = range(-(2**11), 2**11)
 
                 if immediate in valid_range:
                     return True
@@ -307,20 +314,20 @@ class Instruction:
             case "B-type":
                 # Immediate is the branch offset - number of bytes to the label
                 # The immediate is 13-bit signed number
-                valid_range = range(-(2**13), 2**13)
+                valid_range = range(-(2**12), 2**12)
                 if immediate in valid_range:
                     return True
 
             case "U-type":
                 # Immediate is a 20-bit signed number
-                valid_range = range(-(2**20), 2**20)
+                valid_range = range(-(2**19), 2**19)
                 if immediate in valid_range:
                     return True
 
             case "J-type":
                 # Immediate is the jump offset - number of bytes to the label
                 # Immediate is 21-bit
-                valid_range = range(-(2**21), 2**21)
+                valid_range = range(-(2**20), 2**20)
                 if immediate in valid_range:
                     return True
 
@@ -329,3 +336,26 @@ class Instruction:
             f"       > {self.instruction}\n"
             f"       - {self.type} instruction immediate must be in the range: {valid_range[0]} to {valid_range[-1]}"
         )
+
+    def convert_hex(self, hex_str):
+        
+        match self.type:
+            case "I-type" | "S-type":
+                if self.mnemonic in self.shift_instructions:
+                    return int(hex_str, 16)
+                else:
+                    bits = 12
+            case "B-type":
+                bits = 13
+            case "U-type":
+                bits = 20
+            case "J-type:":
+                bits = 21
+            case _:
+                bits = 32
+            
+
+        value = int(hex_str, 16)
+        if value & (1 << (bits - 1)):
+            value -= 1 << bits
+        return value
