@@ -36,7 +36,7 @@ class Instruction:
         Basic format checking
         """
         # instruction is not in format "mnemonic operands"
-        if len(instruction.split(" ", 1)) != 2:
+        if len(instruction.strip().split(" ", 1)) != 2:
             raise InstructionError(
                 f"Invalid instruction format\n"
                 f"       > {instruction.strip()}\n" 
@@ -72,7 +72,7 @@ class Instruction:
         for type in INSTRUCTION_SET:
             if self.mnemonic in INSTRUCTION_SET[type]:
                 # Useful for validating format since load instructions have a different format than the rest of the I-type instructions
-                if self.mnemonic in ["lw", "lb", "lh"]:
+                if self.mnemonic in ["lw", "lb", "lh", "lhu", "lbu"]:
                     self.load_type = True
                 else:
                     self.load_type = False
