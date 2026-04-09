@@ -83,5 +83,7 @@ def test_encode_J_type():
 
 def test_encode(input_inst, expected_encoding):
   instruction = Instruction(input_inst)
+  if instruction.type == "B-type" or instruction.type == "J-type":
+    instruction.imm = int(instruction.label) #type:ignore
 
   assert src.encode.encode(instruction) == expected_encoding
