@@ -49,9 +49,9 @@ def first_pass(input_file, output_file):
             instruction = line.replace(f"{label}:", "")
 
             if label in symbol_table:
-               label_org = []
+               
                error_list.append(
-                  f"      line {line_num}: Label {label} already used on {label_org}\n"
+                  f"      line {line_num}: Label '{label}' already used \n"
                   f"       > {line}\n"
                   )
             
@@ -122,7 +122,7 @@ def second_pass(input_file, output_file):
           
 def collect_label(line):
 
-   if match := re.match(r"(.+):(.*)", line):
+   if match := re.match(r"^([^#]+):(.*)$", line):
       return match.group(1).strip()
    else:
        return None
