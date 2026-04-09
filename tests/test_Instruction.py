@@ -96,7 +96,7 @@ def test_checkreg():
         
 def test_immediate_setter():
    instruction = Instruction("add s1, s2, s3")
-   instruction.type = "I-type"
+   instruction.type = "J-type"
 
    instruction.imm = "0xABC"
    instruction.imm = "0b10011"
@@ -120,13 +120,13 @@ def test_check_immediate_I_S_type():
    assert instruction.check_immediate(0) == True
    assert instruction.check_immediate(23) == True 
    assert instruction.check_immediate(-400) == True 
-   assert instruction.check_immediate(-4096) == True 
-   assert instruction.check_immediate(4095) == True 
+   assert instruction.check_immediate(-2048) == True 
+   assert instruction.check_immediate(2047) == True 
 
    with pytest.raises(InstructionError):
       assert instruction.check_immediate(20000)
-      assert instruction.check_immediate(4096)
-      assert instruction.check_immediate(-4097)
+      assert instruction.check_immediate(-2049)
+      assert instruction.check_immediate(2046)
 
 def test_check_immediate_I_type_shift():
    instruction = Instruction("add s1, s2, s3")
@@ -135,12 +135,12 @@ def test_check_immediate_I_type_shift():
 
    assert instruction.check_immediate(0) == True
    assert instruction.check_immediate(23) == True 
-   assert instruction.check_immediate(32) == True 
    assert instruction.check_immediate(31) == True 
    
 
    with pytest.raises(InstructionError):
       assert instruction.check_immediate(33)
+      assert instruction.check_immediate(32)
       assert instruction.check_immediate(400)
       assert instruction.check_immediate(-1)
       assert instruction.check_immediate(-31)
@@ -151,18 +151,35 @@ def test_check_immediate_B_type():
    instruction.type = "B-type"
 
    assert instruction.check_immediate(0) == True
-   assert instruction.check_immediate(8191) == True
-   assert instruction.check_immediate(-8192) == True
+   assert instruction.check_immediate(4095) == True
+   assert instruction.check_immediate(-4096) == True
 
    with pytest.raises(InstructionError):
-      assert instruction.check_immediate(8192)
-      assert instruction.check_immediate(8200)      
-      assert instruction.check_immediate(-8193)
+      assert instruction.check_immediate(4096)
+      assert instruction.check_immediate(-4097)      
+      assert instruction.check_immediate(8193)
       assert instruction.check_immediate(-20000)
 
 def test_check_immediate_U_type():
    instruction = Instruction("add s1, s2, s3")
    instruction.type = "U-type"
+
+   assert instruction.check_immediate(0) == True
+   assert instruction.check_immediate(524287) == True
+   assert instruction.check_immediate(-524288) == True
+   assert instruction.check_immediate(524286) == True
+   assert instruction.check_immediate(-524287) == True
+
+   with pytest.raises(InstructionError):
+      assert instruction.check_immediate(524288)
+      assert instruction.check_immediate(-524289)      
+      assert instruction.check_immediate(-10000000)
+      assert instruction.check_immediate(2400000)  
+
+
+def test_check_immediate_J_type():
+   instruction = Instruction("add s1, s2, s3")
+   instruction.type = "J-type"
 
    assert instruction.check_immediate(0) == True
    assert instruction.check_immediate(1048575) == True
@@ -176,23 +193,6 @@ def test_check_immediate_U_type():
       assert instruction.check_immediate(-10000000)
       assert instruction.check_immediate(2400000)  
 
-def test_check_immediate_J_type():
-   instruction = Instruction("add s1, s2, s3")
-   instruction.type = "J-type"
-
-   assert instruction.check_immediate(0) == True
-   assert instruction.check_immediate(40000) == True
-   assert instruction.check_immediate(2097151) == True
-   assert instruction.check_immediate(-2097152) == True
-   assert instruction.check_immediate(2097150) == True
-   assert instruction.check_immediate(-2097151) == True
-
-   with pytest.raises(InstructionError):
-      assert instruction.check_immediate(2097152)
-      assert instruction.check_immediate(-2097153)      
-      assert instruction.check_immediate(-10000000)
-      assert instruction.check_immediate(2400000)  
-
 @pytest.mark.parametrize("input_inst, expected_operands",[
         ("add s3, s1, s2", {"rs1":9, "rs2":18, "rd":19, "imm":None, "label":None} ),   
         ("addi s3, s1, 10", {"rs1":9, "rs2":None, "rd":19, "imm":10, "label":None} ), 
@@ -201,7 +201,7 @@ def test_check_immediate_J_type():
         ("sw s3, -80(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":-80, "label":None} ),
         ("beq s3, s1, 47", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"47"} ),  
         ("beq s3, s1, -47", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"-47"} ), 
-        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575, "label":None} ),
+        ("lui s3, 0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":-1, "label":None} ),
         ("lui s3, -400", {"rs1":None, "rs2":None, "rd":19, "imm":-400, "label":None} ),   
     
         ("add  S3 ,s1,    s2", {"rs1":9, "rs2":18, "rd":19, "imm":None, "label":None} ),   
@@ -209,7 +209,7 @@ def test_check_immediate_J_type():
         ("sw s3, 12(s2)", {"rs1":18, "rs2":19, "rd":None, "imm":12, "label":None} ), 
         ("sw   t0   ,    10(x1)", {"rs1":1, "rs2":5, "rd":None, "imm":10, "label":None} ),
         ("beq   s3 , s1, jump", {"rs1":19, "rs2":9, "rd":None, "imm":None, "label":"jump"} ),  
-        ("lui s3,0xFFFFF", {"rs1":None, "rs2":None, "rd":19, "imm":1048575, "label":None} ),   
+        ("lui s3,0x8CDEF", {"rs1":None, "rs2":None, "rd":19, "imm":-471569, "label":None} ),   
         ("jal ra,0b1011", {"rs1":None, "rs2":None, "rd":1, "imm":None, "label":"0b1011"} ),
         ("jal ra, loop", {"rs1":None, "rs2":None, "rd":1, "imm":None, "label":'loop'} ), 
 
