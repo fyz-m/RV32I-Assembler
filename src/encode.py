@@ -188,7 +188,7 @@ def encode_J_type(op: int, rd: int, imm: int) -> int:
     imm_11 = (imm >> 11) & 0x01 
 
     # Extract imm[19:12]
-    imm_19_12 = (imm >> 12) & 0x1FF 
+    imm_19_12 = (imm >> 12) & 0xFF 
 
     # Extract imm[20]
     imm_20 = imm >> 20
