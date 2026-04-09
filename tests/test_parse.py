@@ -23,7 +23,7 @@ addi t0, t0, 10
 # comment
 # beq s2, t0, loop
 addi s2, s2, 1
-bne s2, t0, label
+bne s2, t0, label #notalabel:
 # label:
               
 label: 
@@ -33,7 +33,7 @@ lw s7, 12(s2)
 first_pass_output_1 = """\
 2 0x0: addi t0, t0, 10
 5 0x4: addi s2, s2, 1
-6 0x8: bne s2, t0, label
+6 0x8: bne s2, t0, label #notalabel:
 11 0xc: lw s7, 12(s2)
 """
 second_pass_output_1 = '''\
