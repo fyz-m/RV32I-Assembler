@@ -71,7 +71,7 @@ rv32i-assembler/
 ## Architecture
 The assembler is implemented with a two-pass architecture:
 ### Pass 1  
-Parses every line and adds an address to each instruction (increments in bytes as RISC-V is byte addressable) and collects labels in a symbol table. This allows forward references (branch/jump to a label that appears later on in the file) 
+Parses every line and adds an address to each instruction (increments in bytes as RISC-V is byte addressable) and collects labels in a symbol table. This allows forward references (branch/jump to a label that appears later on in the file). Removes comments and blank lines and tracks line number of each instruction for more useful error messages. 
 ### Pass 2
 Encodes each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label.
 
