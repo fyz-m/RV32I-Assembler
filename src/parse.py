@@ -41,7 +41,7 @@ def first_pass(input_file, output_file):
        if is_comment(line) or not line:
           continue    
        
-       
+       # Addres increments by 4 since RISC-V is byte-addressable 
        address += 4
        instruction = line
 
@@ -98,6 +98,10 @@ def second_pass(input_file, output_file):
             address = int(match.group(2), 0)
 
             try:
+               # Cancel pass if 10 errors are encountered 
+               if len(error_list) >= 10:
+                      return
+               
                instruction = Instruction(match.group(3))
                if instruction.label is not None:
                   instruction.imm = get_offset(instruction.label, address) # type: ignore
@@ -107,11 +111,13 @@ def second_pass(input_file, output_file):
                encoded_instructions.append(f"{encoded_inst}\n")
 
             except InstructionError as e:
-                   error_list.append(f"      line {line_num}: {str(e)}\n")
-                   # Cancel pass if 10 errors are encountered
-                   if len(error_list) >= 10:
-                      return
-                   
+                   error_list.append(f"      line {line_num}: {str(e)}\n")      
+                   continue
+            except KeyError:
+                   error_list.append(
+                                    f"      line {line_num}: Label '{instruction.label}' is referenced but was not found\n"
+                                    f"       > {instruction.instruction}\n"
+                                    )
                    continue
 
            
@@ -121,7 +127,14 @@ def second_pass(input_file, output_file):
       
           
 def collect_label(line):
+   '''
+   Returns a label from a line if found
 
+   E.g
+      Loop: addi t0, t0, 1
+   Returns:
+      "Loop"
+   '''
    if match := re.match(r"^([^#]+):(.*)$", line):
       return match.group(1).strip()
    else:
@@ -129,7 +142,9 @@ def collect_label(line):
 
 
 def is_comment(line: str) -> bool:
-   
+   '''
+   Returns true if line is a comment and false if it is not
+   '''
    if match := re.match(r"#.*", line):
       return True
    else:
@@ -158,6 +173,7 @@ def get_offset(label: str, current_address: int) -> int:
          For LABEL 1, branch offset is 24-16 = 8 bytes. BO = BTA - A
          For LABEL 2, branch offset is 4-16 = -12 bytes. BO = BTA - A 
       '''
+      
       target_address = symbol_table[label]
 
       return target_address - current_address
