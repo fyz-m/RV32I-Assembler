@@ -1,25 +1,28 @@
-# RV32I Assembler
+# RISC-V Assembler
 
-A basic assembler for the RISC-V 32-bit base integer instruction set (RV32I). Translates RV32I assembly into machine code.
+A basic assembler for the base RISC-V 32-bit integer instruction set (RV32I). Translates RV32I assembly into machine code. 
+
+The focus of this project was to learn core concepts in computer architecture, object-oriented programming, systems-programming and Python in general. 
 
 ## Features
 
-- All 40 RV32I instructions
-- Two-pass architecture, forward and backward label references supported
-- ABI register names (`zero`, `ra`, `s0-s11` etc.)
-- Numbered register names (`x0`, `x12` etc.)
-- Immediates can be in decimal, hexadecimal or binary
-- Comment support (`#`)
-- Error messages with line numbers and context  
+- **Instruction set:** All 40 RV32I instructions
+- **Two-pass architecture:** forward and backward label references supported
+- **Syntax:**
+    -  ABI register names (`zero`, `ra`, `s0-s11` etc.)
+    - Numbered register names (`x0`, `x12` etc.)
+    - Immediates can be in decimal, hexadecimal (`0x`) or binary (`0b`)
+    - Comment support (`#`)
+- **Error handling:** Precise error messages with line number, context and issue (e.g Invalid immediate) for developer-friendly debugging  
 
 ## Usage
 
 ```bash
-python main.py -f program.s
+python main.py -f input_program.s
 ```
-Output is written to `program_assembled.txt` as one hex word per instruction.
+Output is written to `input_program_assembled.txt` as one hex word per instruction.
 
-### Example
+### Examples
 Input:
 ```asm
 # Countdown loop
@@ -36,7 +39,7 @@ fe029ee3
 ```
 
 Erroneous input:
-```
+```asm
     addi t0, t0, s1      # I-type instruction's third operand should be an immediate  
     add s1, s2, reg      # 'reg' is not a RISC-V register
 ```
@@ -71,10 +74,27 @@ rv32i-assembler/
 ## Architecture
 The assembler is implemented with a two-pass architecture:
 ### Pass 1  
-Parses every line and adds an address to each instruction (increments in bytes as RISC-V is byte addressable) and collects labels in a symbol table. This allows forward references (branch/jump to a label that appears later on in the file). Removes comments and blank lines and tracks line number of each instruction for more useful error messages. 
+Scan every line, remove comments, add byte address to each instruction and create symbol table to resolve forward label references.
 ### Pass 2
-Encodes each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label.
+Encodes and validates each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label.
+
+## Testing
+This project was focused on test-driven development, ensuring each part was free of fatal bugs before being implemented in the assembler pipeline. To run the test-suite, execute:
+```bash
+pytest tests/
+```
 
 ## Future additions
-- Psuedo-instruction support
-- Connect to a RISC-V simulator 
+- **Psuedo-instruction Support:** Implement instructions such as `mov`, `nop` etc.
+- **Simulator Integration:** Connect to a RISC-V simulator to execute the assembled instructions
+- **Extend ISA:** Add support for `RV32M` (Multiply/Divide) and `RV32F` (Floating point)
+
+## What I learnt
+This was my first python project, here the things I learned while making this assembler:
+- How RISC-V encodes each instruction type into 32-bit machine code
+- Why a two-pass architecture is necessary for forward reference label resolution
+- Bit manipulation in Python: shifting, masking and sign-extending without fixed-width integers
+- Testing code with Pytest and using a debugger: the debugger was extremely useful in debugging the encoding functions and seeing exactly which line of code was the problem
+- Structuring a multi-module project in Python
+- Validating input and object-oriented programming
+- Error-handling and creating useful error messages
