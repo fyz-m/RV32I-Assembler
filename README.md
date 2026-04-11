@@ -6,7 +6,7 @@ The focus of this project was to learn core concepts in computer architecture, o
 
 ## Features
 
-- **Instruction set:** All 40 RV32I instructions
+- **Instruction set:** All 37 RV32I instructions
 - **Two-pass architecture:** forward and backward label references supported
 - **Syntax:**
     -  ABI register names (`zero`, `ra`, `s0-s11` etc.)
@@ -74,7 +74,7 @@ rv32i-assembler/
 ## Architecture
 The assembler is implemented with a two-pass architecture:
 ### Pass 1  
-Scan every line, remove comments, add byte address to each instruction and create symbol table to resolve forward label references.
+Scan every line, remove comments, add byte address to each instruction and create symbol table to resolve forward label references. This is required because if an instruction refers to a label that appears late on in the program, there would be no way calculate the branch offset (number of bytes from the instruction to the label) unless the entire file is scanned first.  
 ### Pass 2
 Encodes and validates each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label.
 
