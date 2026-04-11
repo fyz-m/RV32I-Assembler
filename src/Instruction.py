@@ -147,7 +147,7 @@ class Instruction:
         # Convert immediate to decimal
         if type(immediate) == str:
             try:
-                # If number is hexadecimal
+                # If number is hexadecimal, because int() assumes number is unsigned
                 if immediate.startswith("0x"):
                     immediate = self.convert_hex(immediate)
                 else:
@@ -338,7 +338,10 @@ class Instruction:
         )
 
     def convert_hex(self, hex_str):
-        
+        '''
+        Convert a hexadecimal str into a int
+        It is required for the immediate to be treated as a signed (two's complement) number 
+        '''
         match self.type:
             case "I-type" | "S-type":
                 if self.mnemonic in self.shift_instructions:
@@ -349,7 +352,7 @@ class Instruction:
                 bits = 13
             case "U-type":
                 bits = 20
-            case "J-type:":
+            case "J-type":
                 bits = 21
             case _:
                 bits = 32
