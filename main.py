@@ -3,8 +3,8 @@ from src.parse import assemble
 
 def main():
 
-  file, bin = get_arguments()
-  assemble(file)
+  file, binary = get_arguments()
+  assemble(file, binary)
 
   
 def get_arguments():
