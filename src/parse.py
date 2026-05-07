@@ -6,15 +6,27 @@ from src.encode import encode
 symbol_table = {}
 error_list = []
 
-def assemble(assembly_file):
+def assemble(assembly_file, binary):
    '''
    Takes an assembly file as input and translates it into machine code
    '''
+   # determime extension
+   if binary:
+      ext = ".bin"
+   else:
+      ext = ".txt"
+
    first_pass(assembly_file, "temp.txt")
-   assembly_file = assembly_file.split(".")[0]
-   second_pass("temp.txt", f"{assembly_file}_assembled.txt")
+
+   # Get name of input file
+   assembly_file_name = assembly_file.split(".")[0]
+
+   second_pass("temp.txt", f"{assembly_file_name}_assembled.{ext}", binary)
+
    os.remove("temp.txt")
    
+
+   # Print error list
    if len(error_list) != 0:
       print(f"\n  Failed with {len(error_list)} error(s):\n")
       for error in sorted(error_list, key=lambda x: int(x.split(":")[0][10:])):
@@ -80,12 +92,12 @@ def first_pass(input_file, output_file):
    
            
 
-def second_pass(input_file, output_file):
+def second_pass(input_file, output_file, binary):
     '''
     Translates each instruction into machine code (hexadecimal)
     Removes comments beside instructions
     '''
-    
+   
     encoded_instructions = []
     
     with open(f"{input_file}", "r") as f:
@@ -106,9 +118,15 @@ def second_pass(input_file, output_file):
                if instruction.label is not None:
                   instruction.imm = get_offset(instruction.label, address) # type: ignore
 
-               # Convert into 32-bit hexadecimal str
-               encoded_inst = format(encode(instruction),'08x' )
-               encoded_instructions.append(f"{encoded_inst}\n")
+               # Encode instruction
+               if binary:
+                  # Write as binary data
+                  encoded_inst = encode(instruction).to_bytes(4, byteorder='big', signed=False) #type: ignore  
+                  encoded_instructions.append(encoded_inst)
+               else:
+                  # Write as hexadecimal 
+                  encoded_inst = f"{encode(instruction):08x}"
+                  encoded_instructions.append(f"{encoded_inst}\n")
 
             except InstructionError as e:
                    error_list.append(f"      line {line_num}: {str(e)}\n")      
@@ -122,8 +140,13 @@ def second_pass(input_file, output_file):
 
            
     if len(error_list) == 0:
-      with open(f"{output_file}", "w") as output:
-         output.writelines(encoded_instructions)
+
+      if binary:
+         with open(f"{output_file}", "wb") as output:
+            output.writelines(encoded_instructions)
+      else:
+         with open(f"{output_file}", "w") as output:
+            output.writelines(encoded_instructions)
       
           
 def collect_label(line):
