@@ -22,9 +22,8 @@ def test_parse_instruction_error(input_inst):
         (" ADD   t0, zero, s1", "add"),
         ("LUI   t0, 0", "lui"),
         (" SlTu s3, s4, t1", "sltu"),
-        (" Sw x0, 5(x1)", "sw"),
+        (" Sw x0, 5(x1)", "sw")
         
-  
 ])
 
 def test_parse_mnemonic(input_inst, expected_mnemonic):
@@ -261,6 +260,15 @@ def test_extract_operands_Error(input_inst):
         ("sub x1, x1, x1", 51, 0, 32),
         ("srl x1, x1, x1", 51, 5, 0),
         ("sra x1, x1, x1", 51, 5, 32),
+
+        ("mul x1, x1, x1", 51, 0, 1),
+        ("mulh x1, x1, x1", 51, 1, 1),
+        ("mulsu x1, x1, x1", 51, 2, 1),
+        ("mulu x1, x1, x1", 51, 3, 1),
+        ("div x1, x1, x1", 51, 4, 1),
+        ("divu x1, x1, x1", 51, 5, 1),
+        ("rem x1, x1, x1", 51, 6, 1),
+        ("remu x1, x1, x1", 51, 7, 1),
 
         ("sw x1, 0(x1)", 35, 2, None),
         ("xori x1, x1, 0", 19, 4, None),
