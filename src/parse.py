@@ -20,8 +20,9 @@ def assemble(assembly_file, binary):
 
    # Get name of input file
    assembly_file_name = assembly_file.split(".")[0]
+   output_file_name = f"{assembly_file_name}_assembled.{ext}"
 
-   second_pass("temp.txt", f"{assembly_file_name}_assembled.{ext}", binary)
+   second_pass("temp.txt", output_file_name, binary)
 
    os.remove("temp.txt")
    
@@ -31,6 +32,9 @@ def assemble(assembly_file, binary):
       print(f"\n  Failed with {len(error_list)} error(s):\n")
       for error in sorted(error_list, key=lambda x: int(x.split(":")[0][10:])):
          print(error)
+   else:
+      print("Assembled successfully!")
+
 
 def first_pass(input_file, output_file):
   '''
@@ -53,7 +57,7 @@ def first_pass(input_file, output_file):
        if is_comment(line) or not line:
           continue    
        
-       # Addres increments by 4 since RISC-V is byte-addressable 
+       # Address increments by 4 since RISC-V is byte-addressable 
        address += 4
        instruction = line
 
@@ -138,11 +142,14 @@ def second_pass(input_file, output_file, binary):
                                     )
                    continue
 
-           
+        
     if len(error_list) == 0:
 
       if binary:
          with open(f"{output_file}", "wb") as output:
+            ebreak = 0x00100073.to_bytes(4, byteorder='big', signed=False)
+            encoded_instructions.append(ebreak)
+
             output.writelines(encoded_instructions)
       else:
          with open(f"{output_file}", "w") as output:
