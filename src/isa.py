@@ -23,8 +23,8 @@ INSTRUCTION_SET = {
     # RV32M Multiply extension 
     "mul": { "op": 51, "funct3": 0, "funct7": 1},
     "mulh": { "op": 51, "funct3": 1, "funct7": 1},
-    "mulsu": { "op": 51, "funct3": 2, "funct7": 1},
-    "mulu": { "op": 51, "funct3": 3, "funct7": 1},
+    "mulhsu": { "op": 51, "funct3": 2, "funct7": 1},
+    "mulhu": { "op": 51, "funct3": 3, "funct7": 1},
     "div": { "op": 51, "funct3": 4, "funct7": 1},
     "divu": { "op": 51, "funct3": 5, "funct7": 1},
     "rem": { "op": 51, "funct3": 6, "funct7": 1},

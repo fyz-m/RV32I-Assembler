@@ -263,8 +263,8 @@ def test_extract_operands_Error(input_inst):
 
         ("mul x1, x1, x1", 51, 0, 1),
         ("mulh x1, x1, x1", 51, 1, 1),
-        ("mulsu x1, x1, x1", 51, 2, 1),
-        ("mulu x1, x1, x1", 51, 3, 1),
+        ("mulhsu x1, x1, x1", 51, 2, 1),
+        ("mulhu x1, x1, x1", 51, 3, 1),
         ("div x1, x1, x1", 51, 4, 1),
         ("divu x1, x1, x1", 51, 5, 1),
         ("rem x1, x1, x1", 51, 6, 1),
