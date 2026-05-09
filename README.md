@@ -1,26 +1,26 @@
 # RISC-V Assembler
 
-A basic assembler for the base RISC-V 32-bit integer instruction set (RV32I). Translates RV32I assembly into machine code. 
+A basic assembler for RISC-V assembly. Translates RISC-V assembly into machine code. 
 
 The focus of this project was to learn core concepts in computer architecture, object-oriented programming, systems-programming and Python in general. 
 
 ## Features
 
-- **Instruction set:** All 37 RV32I instructions
+- **Instruction set:** All RV32IM instructions
 - **Two-pass architecture:** forward and backward label references supported
 - **Syntax:**
-    -  ABI register names (`zero`, `ra`, `s0-s11` etc.)
+    - ABI register names (`zero`, `ra`, `s0-s11` etc.)
     - Numbered register names (`x0`, `x12` etc.)
     - Immediates can be in decimal, hexadecimal (`0x`) or binary (`0b`)
     - Comment support (`#`)
 - **Error handling:** Precise error messages with line number, context and issue (e.g Invalid immediate) for developer-friendly debugging  
-
+- **Binary output:** Can output assembled instructions in binary to run on a simulator
 ## Usage
 
 ```bash
-python main.py -f input_program.s
+python main.py -f program.s
 ```
-Output is written to `input_program_assembled.txt` as one hex word per instruction.
+Output is written to `program_assembled.txt` as one hex word per instruction. Adding the `-b` flag creates a binary file `program_assembled.bin` instead of a text file. If you want to simulate the assembled binaries, check out my [RISC-V simulator](https://github.com/fyz-m/RV-ISS).  
 
 ### Examples
 Input:
@@ -76,7 +76,7 @@ The assembler is implemented with a two-pass architecture:
 ### Pass 1  
 Scan every line, remove comments, add byte address to each instruction and create symbol table to resolve forward label references. This is required because if an instruction refers to a label that appears late on in the program, there would be no way calculate the branch offset (number of bytes from the instruction to the label) unless the entire file is scanned first.  
 ### Pass 2
-Encodes and validates each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label.
+Encodes and validates each instruction and calculates branch/jump offsets by looking up the target address in the symbol table for a given label. 
 
 ## Testing
 This project was focused on test-driven development, ensuring each part was free of fatal bugs before being implemented in the assembler pipeline. To run the test-suite, execute:
@@ -85,9 +85,10 @@ pytest tests/
 ```
 
 ## Future additions
-- **Psuedo-instruction Support:** Implement instructions such as `mov`, `nop` etc.
 - **Simulator Integration:** Connect to a RISC-V simulator to execute the assembled instructions
-- **Extend ISA:** Add support for `RV32M` (Multiply/Divide) and `RV32F` (Floating point)
+- **Extend ISA:**
+    - `RV32M` (Multiply/Divide) - Done ✅
+    - `RV32F` (Floating point)
 
 ## What I learnt
 This was my first python project, here the things I learned while making this assembler:
