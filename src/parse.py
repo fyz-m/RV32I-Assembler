@@ -12,9 +12,9 @@ def assemble(assembly_file, binary):
    '''
    # determime extension
    if binary:
-      ext = ".bin"
+      ext = "bin"
    else:
-      ext = ".txt"
+      ext = "txt"
 
    first_pass(assembly_file, "temp.txt")
 
@@ -125,7 +125,7 @@ def second_pass(input_file, output_file, binary):
                # Encode instruction
                if binary:
                   # Write as binary data
-                  encoded_inst = encode(instruction).to_bytes(4, byteorder='big', signed=False) #type: ignore  
+                  encoded_inst = encode(instruction).to_bytes(4, byteorder='little', signed=False) #type: ignore  
                   encoded_instructions.append(encoded_inst)
                else:
                   # Write as hexadecimal 
@@ -147,7 +147,7 @@ def second_pass(input_file, output_file, binary):
 
       if binary:
          with open(f"{output_file}", "wb") as output:
-            ebreak = 0x00100073.to_bytes(4, byteorder='big', signed=False)
+            ebreak = 0x00100073.to_bytes(4, byteorder='little', signed=False)
             encoded_instructions.append(ebreak)
 
             output.writelines(encoded_instructions)
