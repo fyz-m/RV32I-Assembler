@@ -32,12 +32,14 @@ loop:
     bne  t0, zero, loop    # repeat until t0 == 0
 ```
 Output:
+
+Note `ebreak` is automatically added at the end
 ```
 00a00293
 fff28293
 fe029ee3
+00100073
 ```
-
 Erroneous input:
 ```asm
     addi t0, t0, s1      # I-type instruction's third operand should be an immediate  
